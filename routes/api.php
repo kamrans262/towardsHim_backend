@@ -19,6 +19,7 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware('api.member')->group(function (): void {
         Route::get('auth/me', [MemberAuthController::class, 'me']);
         Route::patch('auth/profile', [MemberAuthController::class, 'updateProfile']);
+        Route::post('auth/avatar', [MemberAuthController::class, 'updateAvatar']);
         Route::post('auth/logout', [MemberAuthController::class, 'logout']);
         Route::post('auth/logout-all', [MemberAuthController::class, 'logoutEverywhere']);
         Route::delete('auth/account', [MemberAuthController::class, 'deleteAccount']);
