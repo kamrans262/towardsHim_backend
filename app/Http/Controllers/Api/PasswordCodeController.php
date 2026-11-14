@@ -47,7 +47,7 @@ class PasswordCodeController extends Controller
         $email = strtolower(trim($data['email']));
         $record = DB::table('password_reset_codes')->where('email', $email)->first();
 
-        if (! $record || now()->greaterThan($record->expires_at) || $record->attempts >= 5 ||
+        if (! $record || now()->greaterThan($record->expires_at) || $record->attempts >= 5 || strlen($record->code_hash) === 64 ||
             ! Hash::check($data['code'], $record->code_hash)) {
             if ($record) {
                 DB::table('password_reset_codes')->where('email', $email)->increment('attempts');
