@@ -14,6 +14,11 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    protected $attributes = [
+        'role' => 'member',
+        'is_active' => true,
+    ];
+
     protected function casts(): array
     {
         return [
