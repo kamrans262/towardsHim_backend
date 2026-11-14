@@ -58,6 +58,7 @@ class User extends Authenticatable
             'avatar_url' => $this->avatar_path ? asset('storage/'.$this->avatar_path) : null,
             'email_verified' => $this->email_verified_at !== null,
             'role' => $this->role,
+            'auth_provider' => $this->socialIdentities()->value('provider') ?? 'email',
         ];
     }
 }
