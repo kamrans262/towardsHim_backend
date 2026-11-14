@@ -22,7 +22,7 @@ class SocialTokenVerifier
         $claims = $response->json();
         if (! in_array($claims['aud'] ?? null, $allowed, true) ||
             ! in_array($claims['iss'] ?? null, ['accounts.google.com', 'https://accounts.google.com'], true) ||
-            ($claims['email_verified'] ?? 'false') !== 'true' ||
+            ! in_array($claims['email_verified'] ?? false, ['true', true, 1], true) ||
             (int) ($claims['exp'] ?? 0) <= time() ||
             empty($claims['sub'])) {
             throw new RuntimeException('Invalid Google token claims.', 401);
