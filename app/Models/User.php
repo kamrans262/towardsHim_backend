@@ -2,31 +2,57 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'bio'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
+        ];
+    }
+
+    public function accessTokens()
+    {
+        return $this->hasMany(MemberAccessToken::class);
+    }
+
+    public function socialIdentities()
+    {
+        return $this->hasMany(SocialIdentity::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin' && $this->is_active;
+    }
+
+    public function isMember(): bool
+    {
+        return $this->role === 'member' && $this->is_active;
+    }
+
+    public function publicProfile(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'bio' => $this->bio,
+            'avatar_url' => $this->avatar_path ? asset('storage/'.$this->avatar_path) : null,
+            'email_verified' => $this->email_verified_at !== null,
+            'role' => $this->role,
         ];
     }
 }

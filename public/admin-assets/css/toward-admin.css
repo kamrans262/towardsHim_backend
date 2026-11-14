@@ -1,0 +1,26 @@
+/* Toward HIM brand applied on top of the approved Hope UI / Bootstrap components. */
+:root{--th-orange:#E47821;--th-cream:#F7EDDF;--th-card:#F8F0E3;--th-text:#1C1C1C;--th-muted:#8C8A8A;--bs-primary:#E47821;--bs-primary-rgb:228,120,33;--bs-body-color:#1C1C1C}
+body.toward-admin{background:var(--th-cream);color:var(--th-text);font-family:"DM Sans",system-ui,-apple-system,sans-serif}
+.toward-admin .btn-primary{background:var(--th-orange)!important;border-color:var(--th-orange)!important;color:#fff!important}
+.toward-admin .btn-outline-primary{border-color:var(--th-orange);color:var(--th-orange)}
+.toward-admin .btn-outline-primary:hover{background:var(--th-orange);color:#fff}
+.toward-admin a:not(.btn):not(.nav-link){color:var(--th-orange)}
+.toward-admin .card{border:1px solid rgba(228,120,33,.12)!important;border-radius:12px;box-shadow:0 4px 20px rgba(42,29,13,.035)}
+.toward-admin .card-header{border-color:rgba(228,120,33,.10)}
+.toward-admin .form-control:focus,.toward-admin .form-select:focus{border-color:var(--th-orange);box-shadow:0 0 0 .2rem rgba(228,120,33,.15)}
+.toward-admin .form-check-input:checked{background-color:var(--th-orange);border-color:var(--th-orange)}
+.toward-admin .table>:not(caption)>*>*{padding:1rem;border-color:rgba(228,120,33,.1)}
+.toward-admin .table thead{background:var(--th-card)}
+.toward-admin .table thead th{font-weight:600;color:#493b2f}
+.toward-admin .text-muted{color:var(--th-muted)!important}
+.toward-admin .admin-sidebar{width:255px;min-width:255px;min-height:100vh;background:#fff;display:flex;flex-direction:column;border-right:1px solid rgba(228,120,33,.1);position:sticky;top:0;height:100vh}
+.toward-admin .admin-sidebar .nav-link{color:#4c4b49;font-weight:500;border-radius:10px;padding:.8rem 1rem;margin:.15rem 0}
+.toward-admin .admin-sidebar .nav-link.active{background:rgba(228,120,33,.12);color:var(--th-orange);font-weight:700}
+.toward-admin .admin-sidebar .nav-link.disabled{opacity:.45}
+.toward-admin .main-content{min-width:0}
+.toward-admin .sidebar-logo{max-width:38px;max-height:38px;object-fit:contain}
+.toward-admin .logo-title{font-size:1.08rem;color:var(--th-text)}
+.toward-admin .admin-login-logo{height:76px;max-width:180px;object-fit:contain}
+.toward-admin.guest-page{background:linear-gradient(155deg,#f7eddf,#fffaf3)}
+.toward-admin .auth-card{background:#fff;border-radius:16px}
+@media(max-width:991.98px){.toward-admin .admin-sidebar{display:none}.toward-admin .main-content{width:100%}}
