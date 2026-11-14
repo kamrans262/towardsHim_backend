@@ -21,10 +21,11 @@
         <nav class="nav flex-column px-3" aria-label="Admin navigation">
             <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Dashboard</a>
             <a class="nav-link {{ request()->routeIs('admin.members.*') ? 'active' : '' }}" href="{{ route('admin.members.index') }}">Members</a>
-            <div class="small text-muted fw-semibold mt-4 mb-2 px-3 text-uppercase">Coming in M2–M5</div>
-            <span class="nav-link disabled">Podcasts</span>
-            <span class="nav-link disabled">Meditations</span>
-            <span class="nav-link disabled">Prayers</span>
+            <div class="small text-muted fw-semibold mt-4 mb-2 px-3 text-uppercase">Audio Content</div>
+            <a class="nav-link {{ request()->is('admin/audio/podcasts*') ? 'active' : '' }}" href="{{ route('admin.audio.index', 'podcasts') }}">Podcasts</a>
+            <a class="nav-link {{ request()->is('admin/audio/meditations*') ? 'active' : '' }}" href="{{ route('admin.audio.index', 'meditations') }}">Meditations</a>
+            <a class="nav-link {{ request()->is('admin/audio/prayers*') ? 'active' : '' }}" href="{{ route('admin.audio.index', 'prayers') }}">Prayers</a>
+            <div class="small text-muted fw-semibold mt-4 mb-2 px-3 text-uppercase">Coming in M3–M5</div>
             <span class="nav-link disabled">Towards HIM 3</span>
             <span class="nav-link disabled">Community</span>
             <span class="nav-link disabled">Welcome &amp; About</span>
@@ -44,6 +45,9 @@
         <nav class="collapse d-lg-none bg-white p-3 border-bottom" id="adminMobileSidebar" aria-label="Mobile admin navigation">
             <a class="d-block py-2" href="{{ route('admin.dashboard') }}">Dashboard</a>
             <a class="d-block py-2" href="{{ route('admin.members.index') }}">Members</a>
+            <a class="d-block py-2" href="{{ route('admin.audio.index', 'podcasts') }}">Podcasts</a>
+            <a class="d-block py-2" href="{{ route('admin.audio.index', 'meditations') }}">Meditations</a>
+            <a class="d-block py-2" href="{{ route('admin.audio.index', 'prayers') }}">Prayers</a>
             <form method="POST" action="{{ route('admin.logout') }}">@csrf <button class="btn btn-outline-primary mt-2">Log Out</button></form>
         </nav>
         <main class="container-fluid p-3 p-md-4">

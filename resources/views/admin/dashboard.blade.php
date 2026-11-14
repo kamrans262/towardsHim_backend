@@ -17,6 +17,18 @@
         <p class="text-muted mb-2">Inactive Members</p><h2 class="fw-bold mb-0">{{ number_format($inactiveMembers) }}</h2>
     </div></div></div>
 </div>
+<div class="row g-3 mb-4">
+    @foreach (['podcasts' => 'podcast', 'meditations' => 'meditation', 'prayers' => 'prayer'] as $slug => $type)
+    <div class="col-md-4">
+        <a class="text-decoration-none" href="{{ route('admin.audio.index', $slug) }}">
+            <div class="card border-0"><div class="card-body p-4">
+                <p class="text-muted mb-2">{{ ucfirst($slug) }}</p>
+                <h2 class="fw-bold mb-0">{{ number_format($audioCounts[$type] ?? 0) }}</h2>
+            </div></div>
+        </a>
+    </div>
+    @endforeach
+</div>
 <div class="card border-0">
     <div class="card-header bg-white d-flex align-items-center justify-content-between p-4">
         <h2 class="h5 fw-bold mb-0">Recent Members</h2>

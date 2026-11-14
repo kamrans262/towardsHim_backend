@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AudioController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Middleware\EnsureAdmin;
@@ -11,6 +12,14 @@ Route::post('/', [AdminAuthController::class, 'login'])->middleware('throttle:6,
 Route::get('/admin/login', fn () => redirect()->route('login'));
 Route::middleware(['auth', EnsureAdmin::class])->prefix('admin')->name('admin.')->group(function (): void {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::prefix('audio/{category}')->where(['category' => 'podcasts|meditations|prayers'])->name('audio.')->group(function (): void {
+        Route::get('/', [AudioController::class, 'index'])->name('index');
+        Route::get('/create', [AudioController::class, 'create'])->name('create');
+        Route::post('/', [AudioController::class, 'store'])->name('store');
+        Route::get('/{audio}/edit', [AudioController::class, 'edit'])->name('edit');
+        Route::patch('/{audio}', [AudioController::class, 'update'])->name('update');
+        Route::delete('/{audio}', [AudioController::class, 'destroy'])->name('destroy');
+    });
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
     Route::get('/members', [MemberController::class, 'index'])->name('members.index');
     Route::get('/members/{member}', [MemberController::class, 'show'])->name('members.show');
