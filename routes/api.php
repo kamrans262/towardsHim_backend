@@ -23,5 +23,6 @@ Route::prefix('v1')->group(function (): void {
         Route::post('auth/logout', [MemberAuthController::class, 'logout']);
         Route::post('auth/logout-all', [MemberAuthController::class, 'logoutEverywhere']);
         Route::delete('auth/account', [MemberAuthController::class, 'deleteAccount']);
+        Route::post('auth/account/revoke-social', [SocialAuthController::class, 'deleteAccount'])->middleware('throttle:6,1');
     });
 });
