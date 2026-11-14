@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\MemberAuthController;
 use App\Http\Controllers\Api\AudioController;
 use App\Http\Controllers\Api\PasswordCodeController;
 use App\Http\Controllers\Api\SocialAuthController;
+use App\Http\Controllers\Api\WeeklyChallengeController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function (): void {
@@ -20,6 +21,10 @@ Route::prefix('v1')->group(function (): void {
     });
 
     Route::middleware('api.member')->group(function (): void {
+        Route::get('challenges', [WeeklyChallengeController::class, 'index'])->name('challenges.index');
+        Route::get('challenges/{challenge}', [WeeklyChallengeController::class, 'show'])->name('challenges.show');
+        Route::put('challenges/{challenge}/days/{day}', [WeeklyChallengeController::class, 'setCompletion'])
+            ->whereNumber('day')->middleware('throttle:60,1')->name('challenges.days.set');
         Route::get('auth/me', [MemberAuthController::class, 'me']);
         Route::patch('auth/profile', [MemberAuthController::class, 'updateProfile']);
         Route::post('auth/avatar', [MemberAuthController::class, 'updateAvatar']);

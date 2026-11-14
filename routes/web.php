@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AudioController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MemberController;
+use App\Http\Controllers\Admin\WeeklyChallengeController;
 use App\Http\Middleware\EnsureAdmin;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,11 @@ Route::middleware(['auth', EnsureAdmin::class])->prefix('admin')->name('admin.')
         Route::patch('/{audio}', [AudioController::class, 'update'])->name('update');
         Route::delete('/{audio}', [AudioController::class, 'destroy'])->name('destroy');
     });
+    Route::get('/challenges', [WeeklyChallengeController::class, 'index'])->name('challenges.index');
+    Route::get('/challenges/create', [WeeklyChallengeController::class, 'create'])->name('challenges.create');
+    Route::post('/challenges', [WeeklyChallengeController::class, 'store'])->name('challenges.store');
+    Route::get('/challenges/{challenge}/edit', [WeeklyChallengeController::class, 'edit'])->name('challenges.edit');
+    Route::patch('/challenges/{challenge}', [WeeklyChallengeController::class, 'update'])->name('challenges.update');
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
     Route::get('/members', [MemberController::class, 'index'])->name('members.index');
     Route::get('/members/{member}', [MemberController::class, 'show'])->name('members.show');

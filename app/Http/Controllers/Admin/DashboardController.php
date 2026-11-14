@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\AudioItem;
+use App\Models\WeeklyChallenge;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -16,6 +17,7 @@ class DashboardController extends Controller
             'activeMembers' => User::where('role', 'member')->where('is_active', true)->count(),
             'inactiveMembers' => User::where('role', 'member')->where('is_active', false)->count(),
             'recentMembers' => User::where('role', 'member')->latest()->limit(5)->get(),
+            'publishedChallenges' => WeeklyChallenge::published()->count(),
             'audioCounts' => AudioItem::query()->selectRaw('category, count(*) as count')->groupBy('category')->pluck('count', 'category'),
         ]);
     }

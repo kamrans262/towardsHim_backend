@@ -2,6 +2,10 @@
 @section('title', 'Dashboard')
 
 @section('content')
+<div class="mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+ <div><span class="text-muted">Published Weekly Challenges:</span> <strong>{{ $publishedChallenges }}</strong></div>
+ <a href="{{ route('admin.challenges.index') }}" class="btn btn-outline-primary btn-sm">Manage Towards HIM 3</a>
+</div>
 <div class="mb-4">
     <h1 class="h3 fw-bold mb-1">Welcome back</h1>
     <p class="text-muted mb-0">Manage member accounts and platform access.</p>

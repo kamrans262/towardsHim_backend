@@ -25,8 +25,9 @@
             <a class="nav-link {{ request()->is('admin/audio/podcasts*') ? 'active' : '' }}" href="{{ route('admin.audio.index', 'podcasts') }}">Podcasts</a>
             <a class="nav-link {{ request()->is('admin/audio/meditations*') ? 'active' : '' }}" href="{{ route('admin.audio.index', 'meditations') }}">Meditations</a>
             <a class="nav-link {{ request()->is('admin/audio/prayers*') ? 'active' : '' }}" href="{{ route('admin.audio.index', 'prayers') }}">Prayers</a>
-            <div class="small text-muted fw-semibold mt-4 mb-2 px-3 text-uppercase">Coming in M3–M5</div>
-            <span class="nav-link disabled">Towards HIM 3</span>
+            <div class="small text-muted fw-semibold mt-4 mb-2 px-3 text-uppercase">Challenges</div>
+            <a class="nav-link {{ request()->routeIs('admin.challenges.*') ? 'active' : '' }}" href="{{ route('admin.challenges.index') }}">Towards HIM 3</a>
+            <div class="small text-muted fw-semibold mt-4 mb-2 px-3 text-uppercase">Coming in M4–M5</div>
             <span class="nav-link disabled">Community</span>
             <span class="nav-link disabled">Welcome &amp; About</span>
         </nav>
@@ -48,6 +49,7 @@
             <a class="d-block py-2" href="{{ route('admin.audio.index', 'podcasts') }}">Podcasts</a>
             <a class="d-block py-2" href="{{ route('admin.audio.index', 'meditations') }}">Meditations</a>
             <a class="d-block py-2" href="{{ route('admin.audio.index', 'prayers') }}">Prayers</a>
+            <a class="d-block py-2" href="{{ route('admin.challenges.index') }}">Towards HIM 3</a>
             <form method="POST" action="{{ route('admin.logout') }}">@csrf <button class="btn btn-outline-primary mt-2">Log Out</button></form>
         </nav>
         <main class="container-fluid p-3 p-md-4">
