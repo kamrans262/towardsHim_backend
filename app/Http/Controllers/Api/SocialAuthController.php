@@ -38,6 +38,35 @@ class SocialAuthController extends Controller
         }
     }
 
+    public function deleteAccount(Request $request, SocialTokenVerifier $verifier): JsonResponse
+    {
+        $data = $request->validate([
+            'provider' => ['required', 'in:google,apple'],
+            'identity_token' => ['required', 'string', 'max:8192'],
+            'nonce' => ['nullable', 'string', 'max:256'],
+        ]);
+
+        try {
+            $identity = $data['provider'] === 'google'
+                ? $verifier->google($data['identity_token'])
+                : $verifier->apple($data['identity_token'], $data['nonce'] ?? null);
+        } catch (RuntimeException $exception) {
+            return response()->json(['message' => $exception->getMessage()], $this->status($exception));
+        }
+
+        $user = $request->user();
+        $matches = $user->socialIdentities()
+            ->where('provider', $data['provider'])
+            ->where('subject', $identity['subject'])
+            ->exists();
+        if (! $matches) {
+            return response()->json(['message' => 'Reauthentication did not match this account.'], 403);
+        }
+
+        $user->delete();
+        return response()->json(['message' => 'Account deleted.']);
+    }
+
     private function authenticate(string $provider, array $identity, MemberTokenService $tokens): JsonResponse
     {
         return DB::transaction(function () use ($provider, $identity, $tokens): JsonResponse {
