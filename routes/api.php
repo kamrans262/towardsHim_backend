@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\MemberAuthController;
 use App\Http\Controllers\Api\AudioController;
 use App\Http\Controllers\Api\PasswordCodeController;
 use App\Http\Controllers\Api\SocialAuthController;
+use App\Http\Controllers\Api\CommunityController;
 use App\Http\Controllers\Api\WeeklyChallengeController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +22,14 @@ Route::prefix('v1')->group(function (): void {
     });
 
     Route::middleware('api.member')->group(function (): void {
+        Route::get('community/posts', [CommunityController::class, 'index'])->name('community.posts.index');
+        Route::post('community/posts', [CommunityController::class, 'store'])->middleware('throttle:10,1');
+        Route::get('community/posts/{post}', [CommunityController::class, 'show'])->name('community.posts.show');
+        Route::post('community/posts/{post}/replies', [CommunityController::class, 'reply'])->middleware('throttle:20,1');
+        Route::delete('community/posts/{post}', [CommunityController::class, 'destroy'])->middleware('throttle:30,1');
+        Route::delete('community/posts/{post}/replies/{reply}', [CommunityController::class, 'destroyReply'])
+            ->middleware('throttle:30,1');
+
         Route::get('challenges', [WeeklyChallengeController::class, 'index'])->name('challenges.index');
         Route::get('challenges/{challenge}', [WeeklyChallengeController::class, 'show'])->name('challenges.show');
         Route::put('challenges/{challenge}/days/{day}', [WeeklyChallengeController::class, 'setCompletion'])

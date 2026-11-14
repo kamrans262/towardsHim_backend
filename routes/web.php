@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AudioController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MemberController;
+use App\Http\Controllers\Admin\CommunityModerationController;
 use App\Http\Controllers\Admin\WeeklyChallengeController;
 use App\Http\Middleware\EnsureAdmin;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,11 @@ Route::middleware(['auth', EnsureAdmin::class])->prefix('admin')->name('admin.')
     Route::post('/challenges', [WeeklyChallengeController::class, 'store'])->name('challenges.store');
     Route::get('/challenges/{challenge}/edit', [WeeklyChallengeController::class, 'edit'])->name('challenges.edit');
     Route::patch('/challenges/{challenge}', [WeeklyChallengeController::class, 'update'])->name('challenges.update');
+    Route::get('/community', [CommunityModerationController::class, 'index'])->name('community.index');
+    Route::get('/community/{post}', [CommunityModerationController::class, 'show'])->name('community.show');
+    Route::delete('/community/{post}', [CommunityModerationController::class, 'destroy'])->name('community.destroy');
+    Route::delete('/community/{post}/replies/{reply}', [CommunityModerationController::class, 'destroyReply'])
+        ->name('community.replies.destroy');
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
     Route::get('/members', [MemberController::class, 'index'])->name('members.index');
     Route::get('/members/{member}', [MemberController::class, 'show'])->name('members.show');

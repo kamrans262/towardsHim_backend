@@ -3,6 +3,10 @@
 
 @section('content')
 <div class="mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+ <div><span class="text-muted">Community:</span> <strong>{{ $communityPosts }} posts · {{ $communityReplies }} replies</strong></div>
+ <a href="{{ route('admin.community.index') }}" class="btn btn-outline-primary btn-sm">Moderate Community</a>
+</div>
+<div class="mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
  <div><span class="text-muted">Published Weekly Challenges:</span> <strong>{{ $publishedChallenges }}</strong></div>
  <a href="{{ route('admin.challenges.index') }}" class="btn btn-outline-primary btn-sm">Manage Towards HIM 3</a>
 </div>
