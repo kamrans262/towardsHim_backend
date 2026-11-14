@@ -29,8 +29,8 @@
             <a class="nav-link {{ request()->routeIs('admin.challenges.*') ? 'active' : '' }}" href="{{ route('admin.challenges.index') }}">Towards HIM 3</a>
             <div class="small text-muted fw-semibold mt-4 mb-2 px-3 text-uppercase">Community</div>
             <a class="nav-link {{ request()->routeIs('admin.community.*') ? 'active' : '' }}" href="{{ route('admin.community.index') }}">Community Moderation</a>
-            <div class="small text-muted fw-semibold mt-4 mb-2 px-3 text-uppercase">Coming in M5</div>
-            <span class="nav-link disabled">Welcome &amp; About</span>
+            <div class="small text-muted fw-semibold mt-4 mb-2 px-3 text-uppercase">App Content</div>
+            <a class="nav-link {{ request()->routeIs('admin.content.*') ? 'active' : '' }}" href="{{ route('admin.content.edit') }}">Welcome &amp; About</a>
         </nav>
         <div class="mt-auto p-4">
             <form method="POST" action="{{ route('admin.logout') }}">@csrf
@@ -52,6 +52,7 @@
             <a class="d-block py-2" href="{{ route('admin.audio.index', 'prayers') }}">Prayers</a>
             <a class="d-block py-2" href="{{ route('admin.challenges.index') }}">Towards HIM 3</a>
             <a class="d-block py-2" href="{{ route('admin.community.index') }}">Community Moderation</a>
+            <a class="d-block py-2" href="{{ route('admin.content.edit') }}">Welcome &amp; About</a>
             <form method="POST" action="{{ route('admin.logout') }}">@csrf <button class="btn btn-outline-primary mt-2">Log Out</button></form>
         </nav>
         <main class="container-fluid p-3 p-md-4">

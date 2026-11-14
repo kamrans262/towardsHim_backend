@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AudioController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\CommunityModerationController;
+use App\Http\Controllers\Admin\PlatformContentController;
 use App\Http\Controllers\Admin\WeeklyChallengeController;
 use App\Http\Middleware\EnsureAdmin;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,8 @@ Route::post('/', [AdminAuthController::class, 'login'])->middleware('throttle:6,
 Route::get('/admin/login', fn () => redirect()->route('login'));
 Route::middleware(['auth', EnsureAdmin::class])->prefix('admin')->name('admin.')->group(function (): void {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/content', [PlatformContentController::class, 'edit'])->name('content.edit');
+    Route::patch('/content', [PlatformContentController::class, 'update'])->name('content.update');
     Route::prefix('audio/{category}')->where(['category' => 'podcasts|meditations|prayers'])->name('audio.')->group(function (): void {
         Route::get('/', [AudioController::class, 'index'])->name('index');
         Route::get('/create', [AudioController::class, 'create'])->name('create');

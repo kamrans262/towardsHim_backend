@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'firebase' => [
+        'push_enabled' => (bool) env('FIREBASE_PUSH_ENABLED', false),
+        'project_id' => env('FIREBASE_PROJECT_ID'),
+        'service_account_path' => env('FIREBASE_SERVICE_ACCOUNT_PATH'),
+    ],
+    'toward_him' => [
+        'store_url' => env('TOWARD_HIM_STORE_URL'),
+    ],
 ];

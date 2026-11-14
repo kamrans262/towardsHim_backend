@@ -6,9 +6,13 @@ use App\Http\Controllers\Api\PasswordCodeController;
 use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\CommunityController;
 use App\Http\Controllers\Api\WeeklyChallengeController;
+use App\Http\Controllers\Api\PlatformContentController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\PushDeviceController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function (): void {
+    Route::get('content', [PlatformContentController::class, 'show'])->middleware('throttle:120,1');
     Route::get('audio', [AudioController::class, 'index'])->middleware('throttle:120,1');
     Route::get('audio/{audio}', [AudioController::class, 'show'])->middleware('throttle:120,1');
     Route::middleware('throttle:6,1')->group(function (): void {
@@ -22,6 +26,16 @@ Route::prefix('v1')->group(function (): void {
     });
 
     Route::middleware('api.member')->group(function (): void {
+        Route::get('notifications', [NotificationController::class, 'index']);
+        Route::patch('notifications/{publication}/read', [NotificationController::class, 'markRead'])
+            ->whereNumber('publication')->middleware('throttle:60,1');
+        Route::delete('notifications/{publication}', [NotificationController::class, 'destroy'])
+            ->whereNumber('publication')->middleware('throttle:60,1');
+        Route::post('devices/push', [PushDeviceController::class, 'register'])
+            ->middleware('throttle:15,1');
+        Route::delete('devices/push', [PushDeviceController::class, 'unregister'])
+            ->middleware('throttle:15,1');
+
         Route::get('community/posts', [CommunityController::class, 'index'])->name('community.posts.index');
         Route::post('community/posts', [CommunityController::class, 'store'])->middleware('throttle:10,1');
         Route::get('community/posts/{post}', [CommunityController::class, 'show'])->name('community.posts.show');
