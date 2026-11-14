@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -70,6 +71,23 @@ class MemberAuthController extends Controller
         }
         $user->fill($data)->save();
 
+        return response()->json(['data' => $user->fresh()->publicProfile()]);
+    }
+
+    public function updateAvatar(Request $request): JsonResponse
+    {
+        $request->validate([
+            'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:3072'],
+        ]);
+
+        $user = $request->user();
+        $oldPath = $user->avatar_path;
+        $path = $request->file('avatar')->store('avatars', 'public');
+        $user->forceFill(['avatar_path' => $path])->save();
+
+        if ($oldPath) {
+            Storage::disk('public')->delete($oldPath);
+        }
         return response()->json(['data' => $user->fresh()->publicProfile()]);
     }
 
