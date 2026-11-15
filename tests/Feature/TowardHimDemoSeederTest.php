@@ -17,10 +17,20 @@ class TowardHimDemoSeederTest extends TestCase
     {
         Storage::fake('public');
 
+        $member = new User();
+        $member->forceFill([
+            'name' => 'Existing Mobile Member',
+            'email' => 'kamrans262@gmail.com',
+            'password' => Hash::make('keep-mobile-password'),
+            'role' => 'member',
+            'is_active' => true,
+        ])->save();
+        $memberPasswordHash = $member->password;
+
         $admin = new User();
         $admin->forceFill([
-            'name' => 'Existing Administrator',
-            'email' => 'kamrans262@gmail.com',
+            'name' => 'Separate Administrator',
+            'email' => 'kamrans262+admin@gmail.com',
             'password' => Hash::make('unmodified-admin-password'),
             'role' => 'admin',
             'is_active' => true,
@@ -29,7 +39,7 @@ class TowardHimDemoSeederTest extends TestCase
 
         $this->seed(TowardHimDemoSeeder::class);
 
-        $this->assertDatabaseCount('users', 9);
+        $this->assertDatabaseCount('users', 10);
         $this->assertDatabaseCount('weekly_challenges', 4);
         $this->assertDatabaseCount('weekly_challenge_days', 28);
         $this->assertDatabaseCount('community_posts', 8);
@@ -38,11 +48,17 @@ class TowardHimDemoSeederTest extends TestCase
         $this->assertDatabaseCount('audio_publications', 3);
         $this->assertDatabaseCount('platform_contents', 1);
         $this->assertDatabaseHas('users', [
-            'email' => 'kamrans262@gmail.com',
-            'name' => 'Existing Administrator',
+            'email' => 'kamrans262+admin@gmail.com',
+            'name' => 'Separate Administrator',
             'role' => 'admin',
         ]);
         $this->assertSame($passwordHash, $admin->fresh()->password);
+        $this->assertSame($memberPasswordHash, $member->fresh()->password);
+        $this->assertDatabaseHas('users', [
+            'email' => 'kamrans262@gmail.com',
+            'name' => 'Existing Mobile Member',
+            'role' => 'member',
+        ]);
 
         foreach (['podcast', 'meditation', 'prayer'] as $category) {
             $path = "demo/toward-him-{$category}-preview.wav";
@@ -51,19 +67,19 @@ class TowardHimDemoSeederTest extends TestCase
         }
 
         $this->seed(TowardHimDemoSeeder::class);
-        $this->assertDatabaseCount('users', 9);
+        $this->assertDatabaseCount('users', 10);
         $this->assertDatabaseCount('audio_items', 9);
         $this->assertDatabaseCount('audio_publications', 3);
         $this->assertDatabaseCount('community_posts', 8);
         $this->assertDatabaseCount('weekly_challenge_days', 28);
     }
 
-    public function test_it_refuses_to_seed_without_the_named_admin(): void
+    public function test_it_refuses_to_seed_without_an_active_admin(): void
     {
         Storage::fake('public');
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('administrator kamrans262@gmail.com was not found');
+        $this->expectExceptionMessage('create an active admin account before seeding');
         $this->seed(TowardHimDemoSeeder::class);
     }
 }

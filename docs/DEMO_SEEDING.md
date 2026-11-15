@@ -5,10 +5,14 @@ Only run this intentionally. The default DatabaseSeeder remains unchanged.
 ## Hostinger SSH steps
 
 1. Back up the production database first. The sample content is visible through public/mobile endpoints, so do not use it for a live audience without approval.
-2. Confirm that kamrans262@gmail.com exists with the admin role. The seeder does not change the administrator's password or privileges.
+2. Keep kamrans262@gmail.com as the mobile member account. Create a separate active admin account, for example kamrans262+admin@gmail.com, using the secure toward:admin-create command. The seeder uses the oldest active administrator and does not change any account's password or privileges.
 3. From /home/u777477188/domains/chocolate-goldfish-405384.hostingersite.com/backend run:
 
-    git pull --ff-only origin main && /opt/alt/php85/usr/bin/php artisan db:seed --class=TowardHimDemoSeeder --force
+    git pull --ff-only origin main && /opt/alt/php85/usr/bin/php artisan toward:admin-create kamrans262+admin@gmail.com --name="Administrator"
+
+   After creating the admin with a new password, run:
+
+    /opt/alt/php85/usr/bin/php artisan db:seed --class=TowardHimDemoSeeder --force
 
 4. Because Hostinger serves a separate public_html directory, ensure it exposes the Laravel public storage directory:
 

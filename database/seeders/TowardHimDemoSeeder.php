@@ -20,7 +20,6 @@ use RuntimeException;
 
 class TowardHimDemoSeeder extends Seeder
 {
-    private const ADMIN_EMAIL = 'kamrans262@gmail.com';
     private const SENTINEL_EMAIL = 'ava.mitchell.demo@example.test';
 
     /**
@@ -30,12 +29,13 @@ class TowardHimDemoSeeder extends Seeder
     public function run(): void
     {
         $admin = User::query()
-            ->where('email', self::ADMIN_EMAIL)
             ->where('role', 'admin')
+            ->where('is_active', true)
+            ->orderBy('id')
             ->first();
 
         if (! $admin) {
-            throw new RuntimeException('Demo seed aborted: administrator '.self::ADMIN_EMAIL.' was not found.');
+            throw new RuntimeException('Demo seed aborted: create an active admin account before seeding.');
         }
 
         // Do not re-create deleted/moderated demo content on subsequent runs.
