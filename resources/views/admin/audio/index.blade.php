@@ -16,7 +16,7 @@
       <td>{{ $item->duration_seconds ? ceil($item->duration_seconds / 60).' min' : '—' }}</td>
       <td><span class="badge {{ $item->is_published ? 'text-bg-success' : 'text-bg-secondary' }}">{{ $item->is_published ? 'Published' : 'Draft' }}</span></td>
       <td>{{ $item->published_at?->format('d M Y') ?? '—' }}</td>
-      <td><div class="d-flex gap-2">
+      <td><div class="admin-row-actions">
        <a class="btn btn-outline-primary btn-sm" href="{{ route('admin.audio.edit', [$category, $item]) }}">Edit</a>
        <form method="POST" action="{{ route('admin.audio.destroy', [$category, $item]) }}" onsubmit="return confirm('Remove this audio and its uploaded files?');">
         @csrf @method('DELETE') <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>

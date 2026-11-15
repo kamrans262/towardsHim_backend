@@ -12,7 +12,7 @@
 </head>
 <body class="toward-admin">
 <div class="d-flex min-vh-100 admin-shell">
-    <aside class="sidebar sidebar-default sidebar-white sidebar-base navs-rounded-all admin-sidebar" id="adminSidebar">
+    <aside class="admin-sidebar" id="adminSidebar">
         <div class="sidebar-header px-4 py-4">
             <a href="{{ route('admin.dashboard') }}" class="navbar-brand d-flex align-items-center gap-2 text-decoration-none">
                 <img src="{{ asset('admin-assets/toward_him_logo.svg') }}" alt="Toward HIM" class="sidebar-logo">
@@ -39,7 +39,7 @@
             </form>
         </div>
     </aside>
-    <div class="main-content flex-grow-1">
+    <div class="admin-main-content flex-grow-1">
         <header class="admin-topbar navbar navbar-expand-lg bg-white border-bottom px-3 px-md-4 py-3">
             <button class="btn btn-outline-secondary d-lg-none me-3" type="button" data-bs-toggle="collapse" data-bs-target="#adminMobileSidebar" aria-expanded="false" aria-controls="adminMobileSidebar">Menu</button>
             <span class="fw-semibold fs-5">@yield('title', 'Admin Dashboard')</span>

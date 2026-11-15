@@ -24,3 +24,20 @@ body.toward-admin{background:var(--th-cream);color:var(--th-text);font-family:"D
 .toward-admin.guest-page{background:linear-gradient(155deg,#f7eddf,#fffaf3)}
 .toward-admin .auth-card{background:#fff;border-radius:16px}
 @media(max-width:991.98px){.toward-admin .admin-sidebar{display:none}.toward-admin .main-content{width:100%}}
+
+/* Keep Hope UI visual components, but use our own flex shell layout.
+   Hope UI sets .sidebar fixed and .sidebar + .main-content margin-left.
+   Mixing those with a flex sidebar doubled the offset and clipped tables. */
+.toward-admin .admin-shell{width:100%;min-width:0;align-items:stretch}
+.toward-admin .admin-sidebar{flex:0 0 255px;max-width:255px;overflow-y:auto;overflow-x:hidden}
+.toward-admin .admin-main-content{flex:1 1 0;min-width:0;max-width:100%;margin-left:0}
+.toward-admin .admin-main-content>main{width:100%;min-width:0}
+.toward-admin .admin-main-content .table-responsive{width:100%;max-width:100%;overflow-x:auto}
+.toward-admin .admin-main-content .table{min-width:680px}
+.toward-admin .admin-row-actions{display:flex;gap:.5rem;flex-wrap:nowrap;white-space:nowrap}
+.toward-admin .admin-row-actions>form{margin:0}
+.toward-admin .admin-topbar{gap:.75rem;min-width:0}
+@media(max-width:991.98px){
+ .toward-admin .admin-sidebar{display:none}
+ .toward-admin .admin-main-content{flex:1 1 100%;width:100%;max-width:100%}
+}
