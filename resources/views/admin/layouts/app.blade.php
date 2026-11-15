@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('admin-assets/css/core/libs.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin-assets/css/hope-ui.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('admin-assets/css/toward-admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin-assets/css/toward-admin.css') }}?v=20261116-admin-layout">
 </head>
 <body class="toward-admin">
 <div class="d-flex min-vh-100 admin-shell">
