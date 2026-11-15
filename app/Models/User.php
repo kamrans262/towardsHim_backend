@@ -45,7 +45,9 @@ class User extends Authenticatable
 
     public function isMember(): bool
     {
-        return $this->role === 'member' && $this->is_active;
+        // Administrator accounts inherit member access, including the mobile API.
+        // Web administration still requires isAdmin() and an admin browser session.
+        return $this->is_active && in_array($this->role, ['member', 'admin'], true);
     }
 
     public function publicProfile(): array

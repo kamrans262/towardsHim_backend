@@ -74,4 +74,80 @@ class M1AuthTest extends TestCase
             'identity_token' => 'not-configured',
         ])->assertStatus(503);
     }
+
+    public function test_admin_account_can_sign_in_to_both_web_and_mobile_using_one_email(): void
+    {
+        $admin = User::factory()->create([
+            'email' => 'flutterdb0@gmail.com',
+            'password' => 'StrongPassword123',
+        ]);
+        $admin->forceFill(['role' => 'admin'])->save();
+
+        $this->assertTrue($admin->isAdmin());
+        $this->assertTrue($admin->isMember());
+
+        $this->post('/', [
+            'email' => 'flutterdb0@gmail.com',
+            'password' => 'StrongPassword123',
+        ])->assertRedirect('/admin/dashboard');
+
+        $this->get('/admin/dashboard')->assertOk();
+
+        $mobileLogin = $this->postJson('/api/v1/auth/login', [
+            'email' => 'flutterdb0@gmail.com',
+            'password' => 'StrongPassword123',
+        ])->assertOk()->assertJsonPath('data.user.role', 'admin');
+
+        $this->getJson('/api/v1/auth/me', [
+            'Authorization' => 'Bearer '.$mobileLogin->json('data.token'),
+        ])->assertOk()->assertJsonPath('data.email', 'flutterdb0@gmail.com');
+
+        $this->assertDatabaseCount('users', 1);
+    }
+
+    public function test_existing_member_can_explicitly_gain_admin_access_without_password_change(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'flutterdb0@gmail.com',
+            'password' => 'StrongPassword123',
+        ]);
+        $originalHash = $user->password;
+
+        $this->artisan('toward:admin-create', [
+            'email' => 'flutterdb0@gmail.com',
+            '--grant-existing' => true,
+        ])->expectsConfirmation(
+            'Grant administrator access to flutterdb0@gmail.com? The existing password and mobile app access will remain unchanged.',
+            'yes'
+        )->assertSuccessful();
+
+        $user->refresh();
+        $this->assertSame($originalHash, $user->password);
+        $this->assertTrue($user->isAdmin());
+        $this->assertTrue($user->isMember());
+        $this->assertDatabaseCount('users', 1);
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => 'flutterdb0@gmail.com',
+            'password' => 'StrongPassword123',
+        ])->assertOk();
+
+        // Repeated invocation is safe and does not change credentials.
+        $this->artisan('toward:admin-create', [
+            'email' => 'flutterdb0@gmail.com',
+            '--grant-existing' => true,
+        ])->assertSuccessful();
+        $this->assertSame($originalHash, $user->fresh()->password);
+    }
+
+    public function test_admin_grant_requires_explicit_flag(): void
+    {
+        $user = User::factory()->create(['email' => 'flutterdb0@gmail.com']);
+
+        $this->artisan('toward:admin-create', [
+            'email' => 'flutterdb0@gmail.com',
+        ])->assertFailed();
+
+        $this->assertFalse($user->fresh()->isAdmin());
+    }
 }

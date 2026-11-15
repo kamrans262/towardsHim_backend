@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 class CreateAdmin extends Command
 {
-    protected $signature = 'toward:admin-create {email} {--name=Administrator}';
+    protected $signature = 'toward:admin-create {email} {--name=Administrator} {--grant-existing : Securely grant admin access to an existing member}';
     protected $description = 'Create an administrator through the secure server console';
 
     public function handle(): int
@@ -19,9 +19,44 @@ class CreateAdmin extends Command
             $this->error('Invalid email address.');
             return self::FAILURE;
         }
-        if (User::where('email', $email)->exists()) {
-            $this->error('Email already exists. No account was changed.');
-            return self::FAILURE;
+        $existing = User::where('email', $email)->first();
+        if ($existing) {
+            if (! $this->option('grant-existing')) {
+                $this->error('Email already exists. Use --grant-existing to explicitly authorize promotion.');
+                return self::FAILURE;
+            }
+
+            if (! $existing->is_active) {
+                $this->error('Account is inactive. No account was changed.');
+                return self::FAILURE;
+            }
+
+            if ($existing->role === 'admin') {
+                $this->info('Administrator already exists. Member access is also enabled.');
+                return self::SUCCESS;
+            }
+
+            if ($existing->role !== 'member') {
+                $this->error('Unsupported role. No account was changed.');
+                return self::FAILURE;
+            }
+
+            if (! $existing->password) {
+                $this->error('Existing social-only account has no password for web login. No account was changed.');
+                return self::FAILURE;
+            }
+
+            if (! $this->confirm(
+                'Grant administrator access to '.$email.'? The existing password and mobile app access will remain unchanged.',
+                false
+            )) {
+                $this->warn('No account was changed.');
+                return self::FAILURE;
+            }
+
+            $existing->forceFill(['role' => 'admin'])->save();
+            $this->info('Administrator + member access enabled: '.$email);
+            return self::SUCCESS;
         }
 
         $password = $this->secret('Admin password (at least 12 characters)');
@@ -41,7 +76,7 @@ class CreateAdmin extends Command
             'is_active' => true,
         ])->save();
 
-        $this->info('Administrator created: '.$email);
+        $this->info('Administrator created with web admin + mobile member access: '.$email);
         return self::SUCCESS;
     }
 }

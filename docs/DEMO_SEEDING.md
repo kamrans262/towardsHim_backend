@@ -5,12 +5,12 @@ Only run this intentionally. The default DatabaseSeeder remains unchanged.
 ## Hostinger SSH steps
 
 1. Back up the production database first. The sample content is visible through public/mobile endpoints, so do not use it for a live audience without approval.
-2. Keep kamrans262@gmail.com as the mobile member account. Create a separate active admin account, for example kamrans262+admin@gmail.com, using the secure toward:admin-create command. The seeder uses the oldest active administrator and does not change any account's password or privileges.
+2. Keep kamrans262@gmail.com as the existing member account. Use flutterdb0@gmail.com for web administration AND optional mobile member login. Both interfaces work for the same account because the admin role inherits member access. The demo seeder uses the oldest active administrator without changing any account credentials.
 3. From /home/u777477188/domains/chocolate-goldfish-405384.hostingersite.com/backend run:
 
-    git pull --ff-only origin main && /opt/alt/php85/usr/bin/php artisan toward:admin-create kamrans262+admin@gmail.com --name="Administrator"
+    git pull --ff-only origin main && /opt/alt/php85/usr/bin/php artisan toward:admin-create flutterdb0@gmail.com --name="Administrator" --grant-existing
 
-   After creating the admin with a new password, run:
+   If the address already has a member account, confirm the privilege grant; its password stays unchanged. Otherwise the command prompts for a new password. Then run:
 
     /opt/alt/php85/usr/bin/php artisan db:seed --class=TowardHimDemoSeeder --force
 
