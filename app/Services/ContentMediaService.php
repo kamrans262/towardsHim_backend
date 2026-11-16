@@ -109,7 +109,9 @@ class ContentMediaService
                 $path = null;
             }
 
-            $position = (int) ($data['position'] ?? $index);
+            $position = $existing
+                ? $existing->position
+                : (int) $parent->media()->max('position') + 1;
             if ($existing) {
                 $existing->update([
                     'body' => $body === '' ? null : $body,

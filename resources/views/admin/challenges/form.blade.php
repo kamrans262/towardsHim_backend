@@ -30,7 +30,7 @@
      <label class="form-label fw-semibold" for="day_{{ $day }}">Day {{ $day }} — Text Instructions (optional with media)</label>
      <textarea id="day_{{ $day }}" name="days[{{ $day }}]" class="form-control" rows="2" maxlength="5000">{{ old("days.$day", $dayTexts[$day] ?? '') }}</textarea>
      @include('admin.partials.media_editor', [
-       'owner' => $dayRecords[$day] ?? new AppModelsWeeklyChallengeDay(),
+       'owner' => $dayRecords[$day] ?? new \App\Models\WeeklyChallengeDay(),
        'prefix' => "day_media[$day]",
        'heading' => "Day $day Media",
      ])

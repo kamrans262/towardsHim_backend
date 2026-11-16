@@ -72,12 +72,15 @@ class M2AudioTest extends TestCase
         Event::assertDispatchedTimes(AudioPublished::class, 1);
     }
 
-    public function test_draft_cannot_publish_without_upload_and_published_detail_is_public(): void
+    public function test_text_only_content_can_publish_and_published_detail_is_public(): void
     {
         $this->actingAs($this->admin())->post('/admin/audio/prayers', [
             'title' => 'Morning Prayer', 'description' => 'Pray with us',
             'status' => 'published',
-        ])->assertSessionHasErrors('audio');
+        ])->assertRedirect('/admin/audio/prayers');
+        $this->getJson('/api/v1/audio?category=prayer')->assertOk()
+            ->assertJsonPath('data.0.title', 'Morning Prayer')
+            ->assertJsonPath('data.0.audio_url', null);
 
         $audio = AudioItem::create([
             'category' => 'meditation', 'title' => 'Peace', 'description' => 'Breathe',
