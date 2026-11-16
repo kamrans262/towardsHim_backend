@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Events\AudioPublished;
 use App\Http\Controllers\Controller;
 use App\Models\AudioItem;
+use App\Services\ContentMediaService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +41,7 @@ class AudioController extends Controller
         return view('admin.audio.index', [
             'category' => $category,
             'label' => ucfirst($category),
-            'items' => AudioItem::where('category', $type)->latest()->paginate(15),
+            'items' => AudioItem::where('category', $type)->with('media')->latest()->paginate(15),
         ]);
     }
 
@@ -59,7 +60,7 @@ class AudioController extends Controller
         return view('admin.audio.form', [
             'category' => $category,
             'label' => ucfirst($category),
-            'item' => $this->entry($category, $audio),
+            'item' => $this->entry($category, $audio)->load('media'),
         ]);
     }
 
@@ -96,15 +97,14 @@ class AudioController extends Controller
                 'mimes:mp3,m4a,mp4,aac,ogg,wav', 'max:102400'],
             'artwork' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'remove_artwork' => ['nullable', 'boolean'],
+            ...ContentMediaService::rules('media'),
         ]);
     }
 
     private function saveItem(Request $request, AudioItem $item, array $input): void
     {
-        if ($input['status'] === 'published' && ! $request->hasFile('audio') && ! $item->audio_path) {
-            throw ValidationException::withMessages(['audio' => 'Upload an audio file before publishing.']);
-        }
-
+        // Text-only, image, video, audio, and mixed content may all be published.
+        $mediaService = new ContentMediaService();
         $freshFiles = [];
         $oldFiles = [];
         try {
@@ -135,12 +135,17 @@ class AudioController extends Controller
                 'created_by' => $item->created_by ?? $request->user()->id,
             ]);
 
-            DB::transaction(fn () => $item->save());
+            DB::transaction(function () use ($item, $input, $mediaService): void {
+                $item->save();
+                $mediaService->sync($item, $input['media'] ?? []);
+            });
+            $mediaService->committed();
 
             foreach ($oldFiles as $path) {
                 Storage::disk('public')->delete($path);
             }
         } catch (\Throwable $e) {
+            $mediaService->failed();
             foreach ($freshFiles as $path) {
                 if ($path) Storage::disk('public')->delete($path);
             }
@@ -157,9 +162,15 @@ class AudioController extends Controller
     public function destroy(string $category, AudioItem $audio): RedirectResponse
     {
         $audio = $this->entry($category, $audio);
-        $paths = array_filter([$audio->audio_path, $audio->artwork_path]);
+        $paths = array_filter([
+            $audio->audio_path, $audio->artwork_path,
+            ...$audio->media()->pluck('file_path')->all(),
+        ]);
 
-        $audio->delete();
+        DB::transaction(function () use ($audio): void {
+            $audio->media()->delete();
+            $audio->delete();
+        });
         foreach ($paths as $path) {
             Storage::disk('public')->delete($path);
         }

@@ -16,7 +16,7 @@ class AudioController extends Controller
             'per_page' => ['sometimes', 'integer', 'between:1,50'],
         ]);
 
-        $query = AudioItem::query()->published()->orderByDesc('published_at')->orderByDesc('id');
+        $query = AudioItem::query()->with('media')->published()->orderByDesc('published_at')->orderByDesc('id');
 
         if (! empty($data['category'])) {
             $query->where('category', $data['category']);
@@ -38,11 +38,11 @@ class AudioController extends Controller
     public function show(AudioItem $audio): JsonResponse
     {
         abort_unless(
-            $audio->is_published && $audio->audio_path &&
+            $audio->is_published &&
                 $audio->published_at && $audio->published_at->lte(now()),
             404
         );
 
-        return response()->json(['data' => $audio->toMobileArray()]);
+        return response()->json(['data' => $audio->load('media')->toMobileArray()]);
     }
 }

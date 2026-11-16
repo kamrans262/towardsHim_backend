@@ -25,7 +25,6 @@ class NotificationController extends Controller
                     ->where('state.user_id', '=', $userId);
             })
             ->where('audio_items.is_published', true)
-            ->whereNotNull('audio_items.audio_path')
             ->where('audio_items.published_at', '<=', now())
             ->whereNull('state.deleted_at')
             ->select([
@@ -82,7 +81,7 @@ class NotificationController extends Controller
     {
         $audio = $publication->audio;
         abort_unless(
-            $audio && $audio->is_published && $audio->audio_path &&
+            $audio && $audio->is_published &&
             $audio->published_at && $audio->published_at->lte(now()),
             404
         );

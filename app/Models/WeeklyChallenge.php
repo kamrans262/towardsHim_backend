@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class WeeklyChallenge extends Model
 {
@@ -12,6 +13,12 @@ class WeeklyChallenge extends Model
     protected function casts(): array
     {
         return ['published_at' => 'datetime'];
+    }
+
+    public function media(): MorphMany
+    {
+        return $this->morphMany(ContentMedia::class, 'mediable')
+            ->orderBy('position')->orderBy('id');
     }
 
     public function days(): HasMany
@@ -47,6 +54,7 @@ class WeeklyChallenge extends Model
             'end_date' => $published?->copy()->addDays(6)->toDateString(),
             'completed_days' => $completed,
             'total_days' => 7,
+            'media' => $this->media->map(fn (ContentMedia $block) => $block->toMobileArray())->values(),
         ];
 
         if ($withDays) {
@@ -54,6 +62,7 @@ class WeeklyChallenge extends Model
                 'day' => $day->day_number,
                 'text' => $day->activity,
                 'completed' => $day->completions->isNotEmpty(),
+                'media' => $day->media->map(fn (ContentMedia $block) => $block->toMobileArray())->values(),
             ])->values();
         }
 

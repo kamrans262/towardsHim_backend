@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Storage;
 
 class AudioItem extends Model
@@ -23,10 +24,15 @@ class AudioItem extends Model
         ];
     }
 
+    public function media(): MorphMany
+    {
+        return $this->morphMany(ContentMedia::class, 'mediable')
+            ->orderBy('position')->orderBy('id');
+    }
+
     public function scopePublished($query)
     {
         return $query->where('is_published', true)
-            ->whereNotNull('audio_path')
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now());
     }
@@ -52,6 +58,7 @@ class AudioItem extends Model
             'artwork_url' => $this->artwork_url,
             'duration_seconds' => $this->duration_seconds,
             'published_at' => $this->published_at?->toIso8601String(),
+            'media' => $this->media->map(fn (ContentMedia $block) => $block->toMobileArray())->values(),
         ];
     }
 }

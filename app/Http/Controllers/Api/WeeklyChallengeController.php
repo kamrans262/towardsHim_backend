@@ -33,6 +33,7 @@ class WeeklyChallengeController extends Controller
         $currentId = $this->currentChallengeId();
 
         $items = WeeklyChallenge::query()
+            ->with('media')
             ->published()
             ->withCount([
                 'days as completed_days' => fn ($query) => $query
@@ -52,6 +53,8 @@ class WeeklyChallengeController extends Controller
         $this->published($challenge);
         $memberId = $request->user()->id;
         $challenge->load([
+            'media',
+            'days.media',
             'days.completions' => fn ($query) => $query->where('user_id', $memberId),
         ])->withMemberProgress($memberId);
 

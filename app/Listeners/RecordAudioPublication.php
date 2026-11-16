@@ -12,7 +12,7 @@ class RecordAudioPublication
     public function handle(AudioPublished $event): void
     {
         $audio = $event->audio;
-        if (! $audio->is_published || ! $audio->published_at || ! $audio->audio_path) {
+        if (! $audio->is_published || ! $audio->published_at) {
             return;
         }
 

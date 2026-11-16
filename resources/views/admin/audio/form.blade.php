@@ -5,7 +5,7 @@
 <div class="card border-0" style="max-width:900px">
  <div class="card-header bg-white p-4">
   <h1 class="h4 fw-bold mb-1">{{ $item->exists ? 'Edit' : 'Add' }} {{ Str::singular($label) }}</h1>
-  <p class="text-muted mb-0">Published audio appears in Listen for members and guests.</p>
+  <p class="text-muted mb-0">Published content appears in Listen for members and guests. Audio is optional; text, images and videos are supported.</p>
  </div>
  <div class="card-body p-4">
   @if($errors->any())
@@ -53,6 +53,7 @@
      </select>
     </div>
    </div>
+   @include('admin.partials.media_editor', ['owner' => $item, 'prefix' => 'media', 'heading' => 'Extra Audio, Video, Images & Text'])
    <div class="d-flex gap-2 flex-wrap mt-4">
     <button type="submit" class="btn btn-primary px-4">{{ $item->exists ? 'Save Changes' : 'Save Audio' }}</button>
     <a href="{{ route('admin.audio.index', $category) }}" class="btn btn-outline-secondary">Cancel</a>

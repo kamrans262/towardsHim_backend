@@ -12,7 +12,9 @@
    <tbody>
     @forelse($items as $item)
      <tr>
-      <td><div class="fw-semibold">{{ $item->title }}</div><div class="small text-muted">{{ Str::limit($item->description, 75) }}</div></td>
+      <td><div class="fw-semibold">{{ $item->title }}</div><div class="small text-muted">{{ Str::limit($item->description, 75) }}</div>
+       @if($item->media->isNotEmpty())<div class="small text-muted">{{ $item->media->pluck('type')->unique()->map(fn ($type) => ucfirst($type))->implode(' · ') }}</div>@endif
+      </td>
       <td>{{ $item->duration_seconds ? ceil($item->duration_seconds / 60).' min' : '—' }}</td>
       <td><span class="badge {{ $item->is_published ? 'text-bg-success' : 'text-bg-secondary' }}">{{ $item->is_published ? 'Published' : 'Draft' }}</span></td>
       <td>{{ $item->published_at?->format('d M Y') ?? '—' }}</td>
