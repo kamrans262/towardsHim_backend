@@ -177,7 +177,7 @@ class M1AuthTest extends TestCase
 
     public function test_wrong_password_never_sends_otp_or_creates_a_token(): void
     {
-        Mail::shouldNotReceive('raw');
+        Mail::shouldReceive('raw')->never();
 
         $this->postJson('/api/v1/auth/login', [
             'email' => 'unknown@example.com', 'password' => 'invalid',
@@ -208,6 +208,8 @@ class M1AuthTest extends TestCase
         $this->assertDatabaseHas('login_otp_challenges', [
             'user_id' => $member->id, 'attempts' => 5,
         ]);
+        // Endpoint-level 6/min throttle is separate from the 5-code limit.
+        $this->travel(61)->seconds();
         $this->postJson('/api/v1/auth/login/verify', [
             'challenge' => $pending->json('data.challenge'), 'code' => $code,
         ])->assertUnprocessable();
