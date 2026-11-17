@@ -97,11 +97,18 @@ class ContentMediaService
                 }
                 // Validate the file against its selected media type, not only
                 // the union of upload extensions in the form's request rules.
-                Validator::make(['file' => $upload], [
+                $validator = Validator::make(['file' => $upload], [
                     'file' => ['required', 'file',
                         'mimes:'.implode(',', self::FILE_TYPES[$type]),
                         'max:'.($type === 'image' ? 5120 : ($type === 'audio' ? 102400 : 153600))],
-                ])->validate();
+                ]);
+                if ($validator->fails()) {
+                    // Associate errors with their actual day so the relevant
+                    // collapsed section reopens after validation redirects.
+                    throw ValidationException::withMessages([
+                        $label.'.file' => $validator->errors()->first('file'),
+                    ]);
+                }
 
                 $path = $upload->store('content/'.$type, 'public');
                 if (! $path) {

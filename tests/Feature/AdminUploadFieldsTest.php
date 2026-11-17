@@ -60,7 +60,7 @@ class AdminUploadFieldsTest extends TestCase
         $this->assertSame(7, substr_count($html, 'class="admin-day-instructions"'));
         $this->assertSame(7, substr_count($html, 'class="admin-simple-media admin-simple-media-compact"'));
         $this->assertSame(1, substr_count($html, 'id="challenge-day-1" data-day="1"  open'));
-        $this->assertSame(7, substr_count($html, 'data-day-preview'));
+        $this->assertSame(7, substr_count($html, 'data-day-preview>'));
         $this->assertStringNotContainsString('Uploading the same type replaces the existing file', $html);
         $this->assertStringNotContainsString('Day 1 Media (optional)', $html);
 
