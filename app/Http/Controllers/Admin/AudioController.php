@@ -95,6 +95,8 @@ class AudioController extends Controller
             'status' => ['required', Rule::in(['draft', 'published'])],
             'audio' => [$creating ? 'nullable' : 'sometimes', 'file',
                 'mimes:mp3,m4a,mp4,aac,ogg,wav', 'max:102400'],
+            'video' => ['nullable', 'file', 'mimes:mp4,mov,webm,m4v', 'max:153600'],
+            'remove_video' => ['nullable', 'boolean'],
             'artwork' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'remove_artwork' => ['nullable', 'boolean'],
             ...ContentMediaService::rules('media'),
@@ -113,6 +115,15 @@ class AudioController extends Controller
                 if ($item->exists && $item->getOriginal('audio_path')) {
                     $oldFiles[] = $item->getOriginal('audio_path');
                 }
+            }
+            if ($request->hasFile('video')) {
+                $freshFiles[] = $item->video_path = $request->file('video')->store('video', 'public');
+                if ($item->exists && $item->getOriginal('video_path')) {
+                    $oldFiles[] = $item->getOriginal('video_path');
+                }
+            } elseif ($request->boolean('remove_video') && $item->video_path) {
+                $oldFiles[] = $item->video_path;
+                $item->video_path = null;
             }
             if ($request->hasFile('artwork')) {
                 $freshFiles[] = $item->artwork_path = $request->file('artwork')->store('artwork', 'public');
@@ -163,7 +174,7 @@ class AudioController extends Controller
     {
         $audio = $this->entry($category, $audio);
         $paths = array_filter([
-            $audio->audio_path, $audio->artwork_path,
+            $audio->audio_path, $audio->video_path, $audio->artwork_path,
             ...$audio->media()->pluck('file_path')->all(),
         ]);
 
