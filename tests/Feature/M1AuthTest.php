@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -33,13 +35,25 @@ class M1AuthTest extends TestCase
     public function test_inactive_member_cannot_sign_in_and_existing_token_is_rejected(): void
     {
         $user = User::factory()->create(['email' => 'member@example.com']);
+        $code = null;
+        Mail::shouldReceive('raw')->once()->andReturnUsing(function ($message) use (&$code): void {
+            preg_match('/code is: (\d{6})/', $message, $matches);
+            $code = $matches[1] ?? null;
+        });
         $login = $this->postJson('/api/v1/auth/login', [
             'email' => 'member@example.com', 'password' => 'password',
+        ])->assertOk()->assertJsonMissingPath('data.token');
+
+        $this->assertNotNull($code);
+        $verified = $this->postJson('/api/v1/auth/login/verify', [
+            'challenge' => $login->json('data.challenge'),
+            'code' => $code,
         ])->assertOk();
+        $this->assertNotNull($verified->json('data.token'));
 
         $user->forceFill(['is_active' => false])->save();
         $this->getJson('/api/v1/auth/me', [
-            'Authorization' => 'Bearer '.$login->json('data.token'),
+            'Authorization' => 'Bearer '.$verified->json('data.token'),
         ])->assertUnauthorized();
 
         $this->postJson('/api/v1/auth/login', [
@@ -93,9 +107,19 @@ class M1AuthTest extends TestCase
 
         $this->get('/admin/dashboard')->assertOk();
 
-        $mobileLogin = $this->postJson('/api/v1/auth/login', [
+        $code = null;
+        Mail::shouldReceive('raw')->once()->andReturnUsing(function ($message) use (&$code): void {
+            preg_match('/code is: (\d{6})/', $message, $matches);
+            $code = $matches[1] ?? null;
+        });
+        $pending = $this->postJson('/api/v1/auth/login', [
             'email' => 'flutterdb0@gmail.com',
             'password' => 'StrongPassword123',
+        ])->assertOk()->assertJsonMissingPath('data.token');
+
+        $mobileLogin = $this->postJson('/api/v1/auth/login/verify', [
+            'challenge' => $pending->json('data.challenge'),
+            'code' => $code,
         ])->assertOk()->assertJsonPath('data.user.role', 'admin');
 
         $this->getJson('/api/v1/auth/me', [
@@ -149,5 +173,96 @@ class M1AuthTest extends TestCase
         ])->assertFailed();
 
         $this->assertFalse($user->fresh()->isAdmin());
+    }
+
+    public function test_wrong_password_never_sends_otp_or_creates_a_token(): void
+    {
+        Mail::shouldNotReceive('raw');
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => 'unknown@example.com', 'password' => 'invalid',
+        ])->assertUnprocessable();
+
+        $this->assertDatabaseCount('login_otp_challenges', 0);
+        $this->assertDatabaseCount('member_access_tokens', 0);
+    }
+
+    public function test_five_bad_codes_are_persisted_and_expired_codes_cannot_login(): void
+    {
+        $member = User::factory()->create(['email' => 'member@example.com']);
+        $code = null;
+        Mail::shouldReceive('raw')->once()->andReturnUsing(function ($message) use (&$code): void {
+            preg_match('/code is: (\d{6})/', $message, $matches);
+            $code = $matches[1] ?? null;
+        });
+        $pending = $this->postJson('/api/v1/auth/login', [
+            'email' => 'member@example.com', 'password' => 'password',
+        ])->assertOk();
+
+        $wrong = $code === '000000' ? '111111' : '000000';
+        for ($i = 0; $i < 5; $i++) {
+            $this->postJson('/api/v1/auth/login/verify', [
+                'challenge' => $pending->json('data.challenge'), 'code' => $wrong,
+            ])->assertUnprocessable();
+        }
+        $this->assertDatabaseHas('login_otp_challenges', [
+            'user_id' => $member->id, 'attempts' => 5,
+        ]);
+        $this->postJson('/api/v1/auth/login/verify', [
+            'challenge' => $pending->json('data.challenge'), 'code' => $code,
+        ])->assertUnprocessable();
+        $this->assertDatabaseCount('member_access_tokens', 0);
+    }
+
+    public function test_expired_login_otp_cannot_be_reused(): void
+    {
+        User::factory()->create(['email' => 'member@example.com']);
+        $code = null;
+        Mail::shouldReceive('raw')->once()->andReturnUsing(function ($message) use (&$code): void {
+            preg_match('/code is: (\d{6})/', $message, $matches);
+            $code = $matches[1] ?? null;
+        });
+
+        $pending = $this->postJson('/api/v1/auth/login', [
+            'email' => 'member@example.com', 'password' => 'password',
+        ])->assertOk();
+
+        DB::table('login_otp_challenges')->update(['expires_at' => now()->subSecond()]);
+        $this->postJson('/api/v1/auth/login/verify', [
+            'challenge' => $pending->json('data.challenge'), 'code' => $code,
+        ])->assertUnprocessable();
+        $this->assertDatabaseCount('member_access_tokens', 0);
+    }
+
+    public function test_resend_replaces_old_code_and_requires_cooldown(): void
+    {
+        User::factory()->create(['email' => 'member@example.com']);
+        $codes = [];
+        Mail::shouldReceive('raw')->twice()->andReturnUsing(function ($message) use (&$codes): void {
+            preg_match('/code is: (\d{6})/', $message, $matches);
+            $codes[] = $matches[1] ?? null;
+        });
+
+        $pending = $this->postJson('/api/v1/auth/login', [
+            'email' => 'member@example.com', 'password' => 'password',
+        ])->assertOk();
+        $challenge = $pending->json('data.challenge');
+
+        $this->postJson('/api/v1/auth/login/resend', [
+            'challenge' => $challenge,
+        ])->assertUnprocessable();
+
+        $this->travel(61)->seconds();
+        $this->postJson('/api/v1/auth/login/resend', [
+            'challenge' => $challenge,
+        ])->assertOk()->assertJsonPath('data.resend_after_seconds', 60);
+        $this->assertCount(2, $codes);
+
+        $this->postJson('/api/v1/auth/login/verify', [
+            'challenge' => $challenge, 'code' => $codes[1],
+        ])->assertOk()->assertJsonPath('data.user.email', 'member@example.com');
+        $this->postJson('/api/v1/auth/login/verify', [
+            'challenge' => $challenge, 'code' => $codes[1],
+        ])->assertUnprocessable();
     }
 }
