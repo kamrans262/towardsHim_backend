@@ -5,7 +5,7 @@
 <div class="card border-0" style="max-width:920px">
  <div class="card-header bg-white p-4">
   <h1 class="h4 fw-bold mb-1">{{ $challenge->exists ? 'Edit Challenge' : 'Create Challenge' }}</h1>
-  <p class="text-muted mb-0">Each challenge has seven daily activities. Each day and the weekly introduction can include text, images, audio and video. Editing content does not reset progress.</p>
+  <p class="text-muted mb-0">Each challenge has seven daily activities. Write instructions once, then optionally attach an image, audio or video. Editing content does not reset progress.</p>
  </div>
  <div class="card-body p-4">
   @if($errors->any())
@@ -23,16 +23,16 @@
     <label for="instructions" class="form-label fw-semibold">Instructions</label>
     <textarea id="instructions" name="instructions" class="form-control" rows="5" maxlength="10000">{{ old('instructions', $challenge->instructions) }}</textarea>
    </div>
-   @include('admin.partials.media_editor', ['owner' => $challenge, 'prefix' => 'media', 'heading' => 'Weekly Introduction Media'])
+   @include('admin.partials.simple_media_upload', ['owner' => $challenge, 'prefix' => 'media', 'heading' => 'Weekly Introduction Media (optional)'])
    <h2 class="h5 fw-semibold mb-3">Daily Activities</h2>
    @for($day = 1; $day <= 7; $day++)
     <div class="mb-3">
      <label class="form-label fw-semibold" for="day_{{ $day }}">Day {{ $day }} — Text Instructions (optional with media)</label>
      <textarea id="day_{{ $day }}" name="days[{{ $day }}]" class="form-control" rows="2" maxlength="5000">{{ old("days.$day", $dayTexts[$day] ?? '') }}</textarea>
-     @include('admin.partials.media_editor', [
+     @include('admin.partials.simple_media_upload', [
        'owner' => $dayRecords[$day] ?? new \App\Models\WeeklyChallengeDay(),
        'prefix' => "day_media[$day]",
-       'heading' => "Day $day Media",
+       'heading' => "Day $day Media (optional)",
      ])
     </div>
    @endfor

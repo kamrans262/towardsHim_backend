@@ -49,8 +49,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function setSelected() {
       var file = input && input.files && input.files[0];
-      selected.textContent = file ? file.name : initial;
-      clear.classList.toggle('d-none', !file);
+      if (selected) selected.textContent = file ? file.name : initial;
+      if (clear) clear.classList.toggle('d-none', !file);
     }
 
     if (input) input.addEventListener('change', setSelected);

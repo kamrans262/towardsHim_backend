@@ -25,35 +25,43 @@
    </div>
    <div class="row g-3 mb-4">
     <div class="col-md-6">
-     <label for="audioUpload" class="form-label fw-semibold">Audio file {{ $item->audio_path ? '(replace existing)' : '' }}</label>
-     <input id="audioUpload" name="audio" type="file" class="form-control" accept=".mp3,.m4a,.mp4,.aac,.ogg,.wav,audio/*">
-     <div class="form-text">MP3, M4A, AAC, OGG or WAV, up to 100 MB.</div>
-     @if($item->audio_path)<a class="d-inline-block mt-2" href="{{ $item->audio_url }}" target="_blank" rel="noopener noreferrer">Listen to uploaded audio</a>@endif
+     @include('admin.partials.file_upload', [
+       'id' => 'audioUpload',
+       'field' => 'audio',
+       'label' => 'Audio File (optional)',
+       'path' => $item->audio_path,
+       'originalName' => $item->audio_original_name,
+       'url' => $item->audio_url,
+       'removeField' => 'remove_audio',
+       'accept' => '.mp3,.m4a,.aac,.ogg,.wav',
+       'help' => 'MP3, M4A, AAC, OGG or WAV; up to 100 MB.',
+     ])
     </div>
     <div class="col-md-6">
-     <label for="videoUpload" class="form-label fw-semibold">Video File (optional) {{ $item->video_path ? '(replace existing)' : '' }}</label>
-     <input id="videoUpload" name="video" type="file" class="form-control" accept=".mp4,.mov,.webm,.m4v,video/*">
-     <div class="form-text">MP4, MOV, WEBM or M4V, up to 150 MB.</div>
-     @if($item->video_path)
-      <div class="mt-2">
-       <a href="{{ $item->video_url }}" target="_blank" rel="noopener noreferrer">View uploaded video</a>
-       <label class="form-check mt-2">
-        <input class="form-check-input" type="checkbox" name="remove_video" value="1">
-        <span class="form-check-label">Remove current video</span>
-       </label>
-      </div>
-     @endif
+     @include('admin.partials.file_upload', [
+       'id' => 'videoUpload',
+       'field' => 'video',
+       'label' => 'Video File (optional)',
+       'path' => $item->video_path,
+       'originalName' => $item->video_original_name,
+       'url' => $item->video_url,
+       'removeField' => 'remove_video',
+       'accept' => '.mp4,.mov,.webm,.m4v',
+       'help' => 'MP4, MOV, WEBM or M4V; up to 150 MB.',
+     ])
     </div>
     <div class="col-md-6">
-     <label for="artworkUpload" class="form-label fw-semibold">Artwork (optional)</label>
-     <input id="artworkUpload" name="artwork" type="file" class="form-control" accept=".jpg,.jpeg,.png,.webp,image/*">
-     <div class="form-text">JPG, PNG or WEBP, maximum 5 MB.</div>
-     @if($item->artwork_path)
-      <div class="mt-2">
-       <img src="{{ $item->artwork_url }}" alt="Current cover" style="width:100px;height:100px;object-fit:cover;border-radius:10px">
-       <label class="form-check mt-2"><input class="form-check-input" type="checkbox" name="remove_artwork" value="1"><span class="form-check-label">Remove current artwork</span></label>
-      </div>
-     @endif
+     @include('admin.partials.file_upload', [
+       'id' => 'artworkUpload',
+       'field' => 'artwork',
+       'label' => 'Artwork (optional)',
+       'path' => $item->artwork_path,
+       'originalName' => $item->artwork_original_name,
+       'url' => $item->artwork_url,
+       'removeField' => 'remove_artwork',
+       'accept' => '.jpg,.jpeg,.png,.webp',
+       'help' => 'JPG, PNG or WEBP; maximum 5 MB.',
+     ])
     </div>
     <div class="col-md-6">
      <label for="duration" class="form-label fw-semibold">Duration in minutes (optional)</label>

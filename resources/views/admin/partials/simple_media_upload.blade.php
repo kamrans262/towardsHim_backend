@@ -49,3 +49,27 @@
  </div>
  <div class="small text-muted mt-2">Choose an image, audio or video. Uploading the same type replaces the existing file; text instructions stay unchanged.</div>
 </div>
+
+@once
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.admin-simple-media').forEach(function (section) {
+    var type = section.querySelector('select[name$="[upload][type]"]');
+    var file = section.querySelector('input[data-upload-file]');
+    if (!type || !file) return;
+    function syncType() {
+      var extensions = {
+        image: '.jpg,.jpeg,.png,.webp',
+        audio: '.mp3,.m4a,.aac,.ogg,.wav',
+        video: '.mp4,.mov,.webm,.m4v'
+      };
+      file.accept = extensions[type.value] || '';
+      file.value = '';
+      file.dispatchEvent(new Event('change'));
+    }
+    type.addEventListener('change', syncType);
+    syncType();
+  });
+});
+</script>
+@endonce

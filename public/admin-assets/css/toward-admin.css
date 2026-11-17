@@ -48,3 +48,23 @@ body.toward-admin{background:var(--th-cream);color:var(--th-text);font-family:"D
 .toward-admin .media-editor .media-rows:not(:empty){margin-top:16px}
 .toward-admin .card-body form > .d-flex.flex-wrap.gap-2.mt-4{margin-top:24px!important}
 .toward-admin .media-editor .media-row .form-control{margin-top:6px}
+
+/* Uploaded file names and removable attachments, using the existing Hope UI form system. */
+.toward-admin .admin-upload-frame{border:1px solid #e1e3e7;border-radius:8px;overflow:hidden;background:#fff}
+.toward-admin .admin-upload-current{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 12px;background:#faf7f2}
+.toward-admin .admin-upload-current-name{font-size:13px;overflow-wrap:anywhere;min-width:0}
+.toward-admin .admin-upload-remove{width:29px;height:29px;flex:0 0 29px;border:1px solid #e2b8aa;border-radius:6px;background:#fff;color:#ae3128;font-size:22px;line-height:23px;cursor:pointer}
+.toward-admin .admin-upload-remove:hover{background:#fff1ed}
+.toward-admin .admin-upload-new{display:flex;align-items:center;gap:10px;min-width:0;padding:9px 12px}
+.toward-admin .admin-upload-choose{cursor:pointer;border:1px solid #e1e3e7;border-radius:6px;padding:7px 10px;white-space:nowrap;font-size:13px;color:var(--th-orange);margin:0}
+.toward-admin .admin-upload-choose:hover{background:#fff6ec}
+.toward-admin .admin-upload-native{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+.toward-admin .admin-upload-native:focus-visible + .admin-upload-choose{outline:2px solid var(--th-orange)}
+.toward-admin .admin-upload-new-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--th-muted);font-size:13px}
+.toward-admin .admin-upload-clear{margin-left:auto;border:0;background:transparent;color:#ae3128;font-size:22px;line-height:1;cursor:pointer}
+.toward-admin .admin-upload-undo{border:0;background:transparent;color:var(--th-orange);font-size:12px;padding:7px 12px;text-align:left;cursor:pointer}
+.toward-admin .admin-simple-media{margin-top:10px!important;margin-bottom:24px!important}
+.toward-admin .admin-media-existing{border:1px solid rgba(228,120,33,.14);border-radius:8px;margin-bottom:8px;overflow:hidden}
+.toward-admin .admin-media-existing .admin-upload-current{background:#fff}
+.toward-admin .admin-simple-media .admin-upload-block .form-label{font-weight:500!important}
+.toward-admin .admin-simple-media .admin-upload-new{padding:6px 10px}
