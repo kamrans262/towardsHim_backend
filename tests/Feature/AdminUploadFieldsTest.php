@@ -69,6 +69,25 @@ class AdminUploadFieldsTest extends TestCase
         $this->assertStringContainsString('.toward-admin .admin-day-body{padding:', $css);
     }
 
+
+    public function test_day_cards_render_with_rounded_style_and_right_hand_chevrons_even_without_asset_copy(): void
+    {
+        $this->actingAs($this->admin());
+        $response = $this->get('/admin/challenges/create')->assertOk();
+        $html = $response->getContent();
+
+        $this->assertSame(7, substr_count($html, 'class="admin-day-chevron-wrap"'));
+        $this->assertSame(7, substr_count($html, 'class="admin-day-chevron"'));
+        $this->assertSame(7, substr_count($html, '<path d="m6 9 6 6 6-6"/>'));
+        $this->assertStringContainsString('.admin-challenge-days .admin-day-panel {', $html);
+        $this->assertStringContainsString('border-radius:16px!important', $html);
+        $this->assertStringContainsString('gap:9px!important', $html);
+        $this->assertStringContainsString('.admin-day-summary::-webkit-details-marker', $html);
+        $this->assertStringContainsString('transform:rotate(180deg)!important', $html);
+        $this->assertStringContainsString('day_media[1][upload][file]', $html);
+        $this->assertStringContainsString('day_media[7][upload][file]', $html);
+    }
+
     public function test_invalid_day_media_reports_its_specific_field(): void
     {
         $admin = $this->admin();
