@@ -5,7 +5,7 @@
 <div class="card border-0" style="max-width:920px">
  <div class="card-header bg-white p-4">
   <h1 class="h4 fw-bold mb-1">{{ $challenge->exists ? 'Edit Challenge' : 'Create Challenge' }}</h1>
-  <p class="text-muted mb-0">Each challenge has seven daily activities. Write instructions once, then optionally attach an image, audio or video. Editing content does not reset progress.</p>
+  <p class="text-muted mb-0">Set up the week and its seven daily activities.</p>
  </div>
  <div class="card-body p-4">
   @if($errors->any())
@@ -24,18 +24,61 @@
     <textarea id="instructions" name="instructions" class="form-control" rows="5" maxlength="10000">{{ old('instructions', $challenge->instructions) }}</textarea>
    </div>
    @include('admin.partials.simple_media_upload', ['owner' => $challenge, 'prefix' => 'media', 'heading' => 'Weekly Introduction Media (optional)'])
-   <h2 class="h5 fw-semibold mb-3">Daily Activities</h2>
-   @for($day = 1; $day <= 7; $day++)
-    <div class="mb-3">
-     <label class="form-label fw-semibold" for="day_{{ $day }}">Day {{ $day }} — Text Instructions (optional with media)</label>
-     <textarea id="day_{{ $day }}" name="days[{{ $day }}]" class="form-control" rows="2" maxlength="5000">{{ old("days.$day", $dayTexts[$day] ?? '') }}</textarea>
-     @include('admin.partials.simple_media_upload', [
-       'owner' => $dayRecords[$day] ?? new \App\Models\WeeklyChallengeDay(),
-       'prefix' => "day_media[$day]",
-       'heading' => "Day $day Media (optional)",
-     ])
+   <section class="admin-challenge-days" aria-labelledby="challenge-days-title">
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+     <h2 class="h5 fw-semibold mb-0" id="challenge-days-title">Daily Activities</h2>
+     <span class="small text-muted">7 days</span>
     </div>
-   @endfor
+    @for($day = 1; $day <= 7; $day++)
+     @php
+      $dayText = old("days.$day", $dayTexts[$day] ?? '');
+      $dayRecord = $dayRecords[$day] ?? new \App\Models\WeeklyChallengeDay();
+      $dayHasMedia = $dayRecord->exists && $dayRecord->media->isNotEmpty();
+      $dayHasErrors = $errors->has("days.$day") || collect($errors->keys())->contains(
+          fn ($key) => str_starts_with($key, "day_media.$day.")
+      );
+     @endphp
+     <details class="admin-day-panel" id="challenge-day-{{ $day }}" data-day="{{ $day }}" @if($day === 1 || $dayHasErrors) open @endif>
+      <summary class="admin-day-summary">
+       <span class="admin-day-heading">
+        <span class="admin-day-number">Day {{ $day }}</span>
+        <span class="admin-day-preview" data-day-preview>{{ \Illuminate\Support\Str::limit(trim((string) $dayText), 68) ?: 'Add instructions or media' }}</span>
+       </span>
+       <span class="admin-day-meta">
+        @if($dayHasMedia)<span class="admin-day-media-count">{{ $dayRecord->media->count() }} {{ \Illuminate\Support\Str::plural('file', $dayRecord->media->count()) }}</span>@endif
+        <span class="admin-day-chevron" aria-hidden="true"></span>
+       </span>
+      </summary>
+      <div class="admin-day-body">
+       <div class="admin-day-instructions">
+        <label class="form-label fw-semibold" for="day_{{ $day }}">Instructions</label>
+        <textarea id="day_{{ $day }}" name="days[{{ $day }}]" class="form-control" rows="3" maxlength="5000">{{ $dayText }}</textarea>
+       </div>
+       @include('admin.partials.simple_media_upload', [
+         'owner' => $dayRecord,
+         'prefix' => "day_media[$day]",
+         'heading' => 'Media',
+         'compact' => true,
+       ])
+      </div>
+     </details>
+    @endfor
+   </section>
+   @once
+   <script>
+   document.addEventListener('DOMContentLoaded', function () {
+     document.querySelectorAll('.admin-day-panel').forEach(function (panel) {
+       var field = panel.querySelector('textarea[name^="days["]');
+       var preview = panel.querySelector('[data-day-preview]');
+       if (!field || !preview) return;
+       field.addEventListener('input', function () {
+         var value = field.value.trim().replace(/\s+/g, ' ');
+         preview.textContent = value ? value.substring(0, 68) + (value.length > 68 ? '…' : '') : 'Add instructions or media';
+       });
+     });
+   });
+   </script>
+   @endonce
    @if($challenge->published_at)
     <div class="small text-muted mb-3">Published on {{ $challenge->published_at->format('d M Y') }}. Updates retain all existing completion records.</div>
    @endif

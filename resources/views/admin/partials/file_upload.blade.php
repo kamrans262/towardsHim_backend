@@ -22,7 +22,7 @@
    <label class="admin-upload-choose" for="{{ $uploadId }}">Choose file</label>
    <span class="admin-upload-new-name" data-upload-new-name>{{ $uploadPath ? 'Choose a replacement' : 'No file selected' }}</span>
    <button type="button" class="admin-upload-clear d-none" data-upload-clear aria-label="Clear selected file" title="Clear selected file">×</button>
-   <input id="{{ $uploadId }}" type="file" class="admin-upload-native" name="{{ $field }}" accept="{{ $accept ?? '' }}" data-upload-file>
+   <input id="{{ $uploadId }}" type="file" class="admin-upload-native" name="{{ $field }}" accept="{{ $accept ?? '' }}" aria-label="{{ $uploadLabel }}" style="position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;overflow:hidden!important;clip-path:inset(50%)!important;" data-upload-file>
   </div>
   @if($uploadPath)
    <button type="button" class="admin-upload-undo d-none" data-upload-undo>Undo removal</button>

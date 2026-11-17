@@ -1,10 +1,11 @@
 @php
     $mediaBlocks = $owner->exists ? $owner->media : collect();
     $mediaPrefix = $prefix ?? 'media';
+    $compact = $compact ?? false;
     $mediaId = 'media_upload_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $mediaPrefix);
 @endphp
-<div class="admin-simple-media mb-4" aria-label="{{ $heading ?? 'Media' }}">
- <div class="fw-semibold mb-2">{{ $heading ?? 'Media (optional)' }}</div>
+<div class="admin-simple-media {{ $compact ? 'admin-simple-media-compact' : '' }}" aria-label="{{ $heading ?? 'Media' }}">
+ <div class="fw-semibold admin-simple-media-heading">{{ $heading ?? 'Media (optional)' }}</div>
  @foreach($mediaBlocks as $block)
   <div class="admin-media-existing" data-upload-block>
    @if($block->file_path)
@@ -27,7 +28,7 @@
    <button type="button" data-upload-undo class="admin-upload-undo d-none">Undo removal</button>
   </div>
  @endforeach
- <div class="row g-2 align-items-end">
+ <div class="row g-3 align-items-end admin-media-upload-row">
   <div class="col-sm-4">
    <label class="form-label" for="{{ $mediaId }}_type">Media type</label>
    <select class="form-select" id="{{ $mediaId }}_type" name="{{ $mediaPrefix }}[upload][type]">
@@ -47,7 +48,9 @@
    <input type="hidden" name="{{ $mediaPrefix }}[upload][replace_type]" value="1">
   </div>
  </div>
- <div class="small text-muted mt-2">Choose an image, audio or video. Uploading the same type replaces the existing file; text instructions stay unchanged.</div>
+ @unless($compact)
+ <div class="small text-muted mt-2">Image, audio or video (optional).</div>
+ @endunless
 </div>
 
 @once

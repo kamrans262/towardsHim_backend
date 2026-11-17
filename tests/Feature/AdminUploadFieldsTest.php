@@ -35,8 +35,10 @@ class AdminUploadFieldsTest extends TestCase
     {
         $this->actingAs($this->admin())->get('/admin/challenges/create')
             ->assertOk()
-            ->assertSee('Day 1 — Text Instructions')
-            ->assertSee('Day 7 — Text Instructions')
+            ->assertSee('Day 1')
+            ->assertSee('Day 7')
+            ->assertSee('id="challenge-day-1" data-day="1"  open', false)
+            ->assertSee('id="challenge-day-7" data-day="7"', false)
             ->assertSee('day_media[1][upload][file]', false)
             ->assertSee('day_media[7][upload][type]', false)
             ->assertSee('Weekly Introduction Media (optional)')
@@ -44,6 +46,56 @@ class AdminUploadFieldsTest extends TestCase
             ->assertDontSee('Add Content')
             ->assertDontSee('media-add')
             ->assertDontSee('value="text"', false);
+    }
+
+    public function test_all_seven_daily_activities_are_collapsible_and_spacing_is_scoped_to_the_admin(): void
+    {
+        $this->actingAs($this->admin());
+        $response = $this->get('/admin/challenges/create')->assertOk();
+        $html = $response->getContent();
+
+        $this->assertSame(7, substr_count($html, 'class="admin-day-panel"'));
+        $this->assertSame(7, substr_count($html, 'class="admin-day-summary"'));
+        $this->assertSame(7, substr_count($html, 'class="admin-day-body"'));
+        $this->assertSame(7, substr_count($html, 'class="admin-day-instructions"'));
+        $this->assertSame(7, substr_count($html, 'class="admin-simple-media admin-simple-media-compact"'));
+        $this->assertSame(1, substr_count($html, 'id="challenge-day-1" data-day="1"  open'));
+        $this->assertSame(7, substr_count($html, 'data-day-preview'));
+        $this->assertStringNotContainsString('Uploading the same type replaces the existing file', $html);
+        $this->assertStringNotContainsString('Day 1 Media (optional)', $html);
+
+        $css = file_get_contents(public_path('admin-assets/css/toward-admin.css'));
+        $this->assertStringContainsString('.toward-admin .admin-day-panel[open]', $css);
+        $this->assertStringContainsString('.toward-admin .admin-day-body{padding:', $css);
+    }
+
+    public function test_a_day_with_validation_error_is_expanded_automatically(): void
+    {
+        $admin = $this->admin();
+        $this->actingAs($admin);
+        $this->post('/admin/challenges', [
+            'title' => 'Draft',
+            'instructions' => 'Reflection',
+            'action' => 'publish',
+            'days' => [
+                1 => 'Prayer',
+                2 => 'Reflection',
+                3 => 'Joy',
+                4 => 'Hope',
+                5 => 'Peace',
+                6 => 'Gratitude',
+                7 => 'Kindness',
+            ],
+            'day_media' => [
+                5 => ['upload' => ['type' => 'video', 'file' => \Illuminate\Http\UploadedFile::fake()->image('wrong.png')]],
+            ],
+        ])->assertSessionHasErrors('day_media.5.upload.file');
+
+        $response = $this->get('/admin/challenges/create')->assertOk();
+        $this->assertMatchesRegularExpression(
+            '/id="challenge-day-5" data-day="5"\\s+open/',
+            $response->getContent()
+        );
     }
 
     public function test_saved_filenames_are_visible_with_removal_controls_in_listen_forms(): void

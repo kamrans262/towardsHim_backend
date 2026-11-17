@@ -68,3 +68,36 @@ body.toward-admin{background:var(--th-cream);color:var(--th-text);font-family:"D
 .toward-admin .admin-media-existing .admin-upload-current{background:#fff}
 .toward-admin .admin-simple-media .admin-upload-block .form-label{font-weight:500!important}
 .toward-admin .admin-simple-media .admin-upload-new{padding:6px 10px}
+
+/* Toward HIM 3: compact, accessible native collapsible day cards. */
+.toward-admin .admin-challenge-days{margin-top:30px;margin-bottom:28px}
+.toward-admin .admin-day-panel{border:1px solid #e6e2da;border-radius:12px;background:#fff;margin-bottom:14px;overflow:hidden;box-shadow:0 2px 8px rgba(42,29,13,.025)}
+.toward-admin .admin-day-panel[open]{border-color:rgba(228,120,33,.30);box-shadow:0 4px 16px rgba(42,29,13,.04)}
+.toward-admin .admin-day-summary{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:76px;padding:16px 20px;cursor:pointer;list-style:none;background:#fff}
+.toward-admin .admin-day-summary::-webkit-details-marker{display:none}
+.toward-admin .admin-day-summary::marker{content:''}
+.toward-admin .admin-day-summary:hover{background:#fffaf4}
+.toward-admin .admin-day-summary:focus-visible{outline:2px solid var(--th-orange);outline-offset:-3px}
+.toward-admin .admin-day-panel[open] .admin-day-summary{border-bottom:1px solid #efebe5;background:#fffaf5}
+.toward-admin .admin-day-heading{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.toward-admin .admin-day-number{font-weight:700;color:var(--th-text);font-size:15px;line-height:1.35}
+.toward-admin .admin-day-preview{color:var(--th-muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.35}
+.toward-admin .admin-day-meta{display:flex;gap:15px;align-items:center;flex-shrink:0}
+.toward-admin .admin-day-media-count{font-size:12px;color:var(--th-orange);white-space:nowrap}
+.toward-admin .admin-day-chevron{width:10px;height:10px;border-right:2px solid var(--th-orange);border-bottom:2px solid var(--th-orange);transform:rotate(45deg);transition:transform .16s ease}
+.toward-admin .admin-day-panel[open] .admin-day-chevron{transform:rotate(225deg)}
+.toward-admin .admin-day-body{padding:22px 20px 24px;display:flex;flex-direction:column;gap:24px}
+.toward-admin .admin-day-instructions .form-label{display:block;margin-bottom:10px}
+.toward-admin .admin-day-instructions textarea{min-height:108px;resize:vertical}
+.toward-admin .admin-day-body .admin-simple-media{margin:0!important;padding:0!important}
+.toward-admin .admin-simple-media-heading{margin-bottom:12px}
+.toward-admin .admin-day-body .admin-media-upload-row{row-gap:16px!important}
+.toward-admin .admin-day-body .admin-media-upload-row .form-label{margin-bottom:10px}
+.toward-admin .admin-day-body .admin-upload-block{min-width:0}
+.toward-admin .admin-day-body .admin-upload-frame{min-height:44px}
+.toward-admin .admin-day-body .admin-upload-choose{color:var(--th-orange)}
+@media(max-width:575.98px){
+ .toward-admin .admin-day-summary{padding:14px 16px;gap:10px}
+ .toward-admin .admin-day-body{padding:18px 16px 22px}
+ .toward-admin .admin-day-preview{font-size:12px}
+}
