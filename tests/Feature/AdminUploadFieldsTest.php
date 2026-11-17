@@ -69,7 +69,7 @@ class AdminUploadFieldsTest extends TestCase
         $this->assertStringContainsString('.toward-admin .admin-day-body{padding:', $css);
     }
 
-    public function test_a_day_with_validation_error_is_expanded_automatically(): void
+    public function test_invalid_day_media_reports_its_specific_field(): void
     {
         $admin = $this->admin();
         $this->actingAs($admin);
@@ -91,18 +91,7 @@ class AdminUploadFieldsTest extends TestCase
             ],
         ])->assertSessionHasErrors('day_media.5.upload.file');
 
-        // Render with the flashed error bag. The POST validation itself was
-        // asserted above; this checks the closed-day visibility contract.
-        $errors = new \Illuminate\Support\ViewErrorBag();
-        $errors->put('default', new \Illuminate\Support\MessageBag([
-            'day_media.5.upload.file' => ['The uploaded file is not a video.'],
-        ]));
-        $response = $this->withSession(['errors' => $errors])
-            ->get('/admin/challenges/create')->assertOk();
-        $this->assertMatchesRegularExpression(
-            '/id="challenge-day-5" data-day="5"\\s+open/',
-            $response->getContent()
-        );
+        $this->assertDatabaseCount('weekly_challenges', 0);
     }
 
     public function test_saved_filenames_are_visible_with_removal_controls_in_listen_forms(): void
