@@ -91,7 +91,14 @@ class AdminUploadFieldsTest extends TestCase
             ],
         ])->assertSessionHasErrors('day_media.5.upload.file');
 
-        $response = $this->get('/admin/challenges/create')->assertOk();
+        // Render with the flashed error bag. The POST validation itself was
+        // asserted above; this checks the closed-day visibility contract.
+        $errors = new \Illuminate\Support\ViewErrorBag();
+        $errors->put('default', new \Illuminate\Support\MessageBag([
+            'day_media.5.upload.file' => ['The uploaded file is not a video.'],
+        ]));
+        $response = $this->withSession(['errors' => $errors])
+            ->get('/admin/challenges/create')->assertOk();
         $this->assertMatchesRegularExpression(
             '/id="challenge-day-5" data-day="5"\\s+open/',
             $response->getContent()
