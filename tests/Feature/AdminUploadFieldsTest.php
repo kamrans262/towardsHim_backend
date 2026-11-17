@@ -103,7 +103,8 @@ class AdminUploadFieldsTest extends TestCase
     public function test_daily_upload_replaces_same_type_and_removing_it_does_not_clear_text_or_progress(): void
     {
         Storage::fake('public');
-        $this->actingAs($this->admin());
+        $admin = $this->admin();
+        $this->actingAs($admin);
 
         $this->post('/admin/challenges', [
             'title' => 'Prayer Week',
@@ -133,6 +134,7 @@ class AdminUploadFieldsTest extends TestCase
         $this->putJson("/api/v1/challenges/{$challenge->id}/days/1",
             ['completed' => true], $headers)->assertOk();
 
+        $this->actingAs($admin);
         $this->get("/admin/challenges/{$challenge->id}/edit")
             ->assertOk()
             ->assertSee('day-one-prayer.png')
