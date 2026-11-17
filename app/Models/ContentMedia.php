@@ -10,7 +10,7 @@ class ContentMedia extends Model
 {
     protected $table = 'content_media';
 
-    protected $fillable = ['type', 'body', 'file_path', 'position'];
+    protected $fillable = ['type', 'body', 'file_path', 'original_name', 'position'];
 
     public function mediable(): MorphTo
     {

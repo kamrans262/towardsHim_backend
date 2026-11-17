@@ -12,6 +12,7 @@ class AudioItem extends Model
 
     protected $fillable = [
         'category', 'title', 'description', 'audio_path', 'video_path', 'artwork_path',
+        'audio_original_name', 'video_original_name', 'artwork_original_name',
         'duration_seconds', 'is_published', 'published_at', 'created_by',
     ];
 

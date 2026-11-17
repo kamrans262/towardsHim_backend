@@ -32,6 +32,7 @@ class ContentMediaService
             $prefix.'.*.file' => ['nullable', 'file', 'max:153600',
                 'mimes:mp3,m4a,aac,ogg,wav,mp4,mov,webm,m4v,jpg,jpeg,png,webp'],
             $prefix.'.*.remove' => ['nullable', 'boolean'],
+            $prefix.'.*.replace_type' => ['nullable', 'boolean'],
         ];
     }
 
@@ -46,6 +47,12 @@ class ContentMediaService
             $existing = ! empty($data['id'])
                 ? $parent->media()->findOrFail((int) $data['id'])
                 : null;
+            if (! $existing && ! empty($data['replace_type'])) {
+                // The simplified weekly/day editor replaces the saved file
+                // of this type rather than silently creating duplicates.
+                $existing = $parent->media()->where('type', $type)
+                    ->whereNotNull('file_path')->first();
+            }
 
             if (! empty($data['remove'])) {
                 if ($existing) {
@@ -57,7 +64,7 @@ class ContentMediaService
                 continue;
             }
 
-            $body = trim((string) ($data['body'] ?? ''));
+            $body = trim((string) ($data['body'] ?? $existing?->body ?? ''));
             $upload = $data['file'] ?? null;
             if (! $existing && ! $upload && $body === '') {
                 continue; // Newly added but unfilled admin row.
@@ -81,6 +88,7 @@ class ContentMediaService
             }
 
             $path = $existing?->file_path;
+            $originalName = $existing?->original_name;
             if ($upload instanceof UploadedFile) {
                 if ($type === 'text') {
                     throw ValidationException::withMessages([
@@ -102,11 +110,13 @@ class ContentMediaService
                     ]);
                 }
                 $this->newFiles[] = $path;
+                $originalName = $upload->getClientOriginalName();
                 if ($existing?->file_path) $this->oldFiles[] = $existing->file_path;
             }
             if ($type === 'text' && $existing?->file_path) {
                 $this->oldFiles[] = $existing->file_path;
                 $path = null;
+                $originalName = null;
             }
 
             $position = $existing
@@ -116,6 +126,7 @@ class ContentMediaService
                 $existing->update([
                     'body' => $body === '' ? null : $body,
                     'file_path' => $path,
+                    'original_name' => $originalName,
                     'position' => $position,
                 ]);
             } else {
@@ -123,6 +134,7 @@ class ContentMediaService
                     'type' => $type,
                     'body' => $body === '' ? null : $body,
                     'file_path' => $path,
+                    'original_name' => $originalName,
                     'position' => $position,
                 ]);
             }
