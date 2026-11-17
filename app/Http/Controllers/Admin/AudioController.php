@@ -95,6 +95,7 @@ class AudioController extends Controller
             'status' => ['required', Rule::in(['draft', 'published'])],
             'audio' => [$creating ? 'nullable' : 'sometimes', 'file',
                 'mimes:mp3,m4a,mp4,aac,ogg,wav', 'max:102400'],
+            'remove_audio' => ['nullable', 'boolean'],
             'video' => ['nullable', 'file', 'mimes:mp4,mov,webm,m4v', 'max:153600'],
             'remove_video' => ['nullable', 'boolean'],
             'artwork' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
@@ -112,27 +113,36 @@ class AudioController extends Controller
         try {
             if ($request->hasFile('audio')) {
                 $freshFiles[] = $item->audio_path = $request->file('audio')->store('audio', 'public');
+                $item->audio_original_name = $request->file('audio')->getClientOriginalName();
                 if ($item->exists && $item->getOriginal('audio_path')) {
                     $oldFiles[] = $item->getOriginal('audio_path');
                 }
+            } elseif ($request->boolean('remove_audio') && $item->audio_path) {
+                $oldFiles[] = $item->audio_path;
+                $item->audio_path = null;
+                $item->audio_original_name = null;
             }
             if ($request->hasFile('video')) {
                 $freshFiles[] = $item->video_path = $request->file('video')->store('video', 'public');
+                $item->video_original_name = $request->file('video')->getClientOriginalName();
                 if ($item->exists && $item->getOriginal('video_path')) {
                     $oldFiles[] = $item->getOriginal('video_path');
                 }
             } elseif ($request->boolean('remove_video') && $item->video_path) {
                 $oldFiles[] = $item->video_path;
                 $item->video_path = null;
+                $item->video_original_name = null;
             }
             if ($request->hasFile('artwork')) {
                 $freshFiles[] = $item->artwork_path = $request->file('artwork')->store('artwork', 'public');
+                $item->artwork_original_name = $request->file('artwork')->getClientOriginalName();
                 if ($item->exists && $item->getOriginal('artwork_path')) {
                     $oldFiles[] = $item->getOriginal('artwork_path');
                 }
             } elseif ($request->boolean('remove_artwork') && $item->artwork_path) {
                 $oldFiles[] = $item->artwork_path;
                 $item->artwork_path = null;
+                $item->artwork_original_name = null;
             }
 
             $firstPublication = $input['status'] === 'published' && ! $item->is_published;
