@@ -37,7 +37,8 @@ class ListenVideoUploadTest extends TestCase
         $this->get('/admin/challenges/create')
             ->assertOk()
             ->assertSee('Weekly Introduction Media')
-            ->assertSee('media-add');
+            ->assertSee('day_media[1][upload][file]', false)
+            ->assertDontSee('media-add');
     }
 
     public function test_published_audio_and_video_have_separate_urls_and_support_replacement(): void
