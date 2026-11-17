@@ -23,7 +23,7 @@
     <label for="audioDescription" class="form-label fw-semibold">Description</label>
     <textarea id="audioDescription" name="description" rows="5" maxlength="10000" required class="form-control">{{ old('description', $item->description) }}</textarea>
    </div>
-   <div class="row g-3">
+   <div class="row g-3 mb-4">
     <div class="col-md-6">
      <label for="audioUpload" class="form-label fw-semibold">Audio file {{ $item->audio_path ? '(replace existing)' : '' }}</label>
      <input id="audioUpload" name="audio" type="file" class="form-control" accept=".mp3,.m4a,.mp4,.aac,.ogg,.wav,audio/*">

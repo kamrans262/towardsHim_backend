@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\MemberAuthController;
+use App\Http\Controllers\Api\LoginOtpController;
 use App\Http\Controllers\Api\AudioController;
 use App\Http\Controllers\Api\PasswordCodeController;
 use App\Http\Controllers\Api\SocialAuthController;
@@ -18,6 +19,8 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware('throttle:6,1')->group(function (): void {
         Route::post('auth/register', [MemberAuthController::class, 'register']);
         Route::post('auth/login', [MemberAuthController::class, 'login']);
+        Route::post('auth/login/verify', [LoginOtpController::class, 'verify']);
+        Route::post('auth/login/resend', [LoginOtpController::class, 'resend']);
         Route::post('auth/google', [SocialAuthController::class, 'google']);
         Route::post('auth/apple', [SocialAuthController::class, 'apple']);
         Route::post('auth/password/send-code', [PasswordCodeController::class, 'send']);

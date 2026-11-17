@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('admin-assets/css/core/libs.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin-assets/css/hope-ui.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('admin-assets/css/toward-admin.css') }}?v=20261116-admin-layout">
+    <link rel="stylesheet" href="{{ asset('admin-assets/css/toward-admin.css') }}?v=20261117-admin-spacing-store">
 </head>
 <body class="toward-admin">
 <div class="d-flex min-vh-100 admin-shell">
@@ -32,6 +32,8 @@
             <a class="nav-link {{ request()->routeIs('admin.community.*') ? 'active' : '' }}" href="{{ route('admin.community.index') }}">Community Moderation</a>
             <div class="small text-muted fw-semibold mt-4 mb-2 px-3 text-uppercase">App Content</div>
             <a class="nav-link {{ request()->routeIs('admin.content.*') ? 'active' : '' }}" href="{{ route('admin.content.edit') }}">Welcome &amp; About</a>
+            <div class="small text-muted fw-semibold mt-4 mb-2 px-3 text-uppercase">Store</div>
+            <a class="nav-link" href="https://towardhim.promostore.com/" target="_blank" rel="noopener noreferrer">Merchandise Store</a>
         </nav>
         <div class="mt-auto p-4">
             <form method="POST" action="{{ route('admin.logout') }}">@csrf
@@ -54,6 +56,7 @@
             <a class="d-block py-2" href="{{ route('admin.challenges.index') }}">Towards HIM 3</a>
             <a class="d-block py-2" href="{{ route('admin.community.index') }}">Community Moderation</a>
             <a class="d-block py-2" href="{{ route('admin.content.edit') }}">Welcome &amp; About</a>
+            <a class="d-block py-2" href="https://towardhim.promostore.com/" target="_blank" rel="noopener noreferrer">Merchandise Store</a>
             <form method="POST" action="{{ route('admin.logout') }}">@csrf <button class="btn btn-outline-primary mt-2">Log Out</button></form>
         </nav>
         <main class="container-fluid p-3 p-md-4">

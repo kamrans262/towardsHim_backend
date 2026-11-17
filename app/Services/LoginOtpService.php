@@ -91,25 +91,32 @@ class LoginOtpService
 
     public function verify(string $challenge, string $code, MemberTokenService $tokens): array
     {
-        return DB::transaction(function () use ($challenge, $code, $tokens): array {
+        $result = DB::transaction(function () use ($challenge, $code, $tokens): array {
             $record = $this->lockedChallenge($challenge);
             if (! $record) {
-                throw ValidationException::withMessages(['code' => 'Invalid or expired code. Please log in again.']);
+                return ['error' => 'Invalid or expired code. Please log in again.'];
             }
 
             if (! Hash::check($code, $record->code_hash)) {
+                // Return the error after commit so the failed attempt persists.
                 DB::table('login_otp_challenges')->where('id', $record->id)->increment('attempts');
-                throw ValidationException::withMessages(['code' => 'Invalid verification code.']);
+                return ['error' => 'Invalid verification code.'];
             }
 
             $user = User::find($record->user_id);
             if (! $user || ! $user->isMember() || ! $user->password) {
-                throw ValidationException::withMessages(['code' => 'Account unavailable. Please log in again.']);
+                return ['error' => 'Account unavailable. Please log in again.'];
             }
             DB::table('login_otp_challenges')->where('user_id', $user->id)->delete();
 
-            return $tokens->issue($user);
+            return ['data' => $tokens->issue($user)];
         });
+
+        if (isset($result['error'])) {
+            throw ValidationException::withMessages(['code' => $result['error']]);
+        }
+
+        return $result['data'];
     }
 
     private function lockedChallenge(string $challenge): ?object

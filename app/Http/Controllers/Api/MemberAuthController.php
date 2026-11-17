@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\MemberTokenService;
+use App\Services\LoginOtpService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,7 +32,7 @@ class MemberAuthController extends Controller
         });
     }
 
-    public function login(Request $request, MemberTokenService $tokens): JsonResponse
+    public function login(Request $request, LoginOtpService $otp): JsonResponse
     {
         $data = $request->validate([
             'email' => ['required', 'email'],
@@ -44,7 +45,9 @@ class MemberAuthController extends Controller
             return response()->json(['message' => 'Invalid credentials or inactive account.'], 422);
         }
 
-        return response()->json(['data' => $tokens->issue($user)]);
+        // Password validation does not issue an authenticated token.
+        // Only a matching, unexpired email OTP completes sign-in.
+        return response()->json(['data' => $otp->begin($user)]);
     }
 
     public function me(Request $request): JsonResponse

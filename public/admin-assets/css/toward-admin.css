@@ -41,3 +41,10 @@ body.toward-admin{background:var(--th-cream);color:var(--th-text);font-family:"D
  .toward-admin .admin-sidebar{display:none}
  .toward-admin .admin-main-content{flex:1 1 100%;width:100%;max-width:100%}
 }
+
+/* Consistent breathing room for all Hope UI admin forms and media sections. */
+.toward-admin .card-body form > .row.g-3 + .media-editor{margin-top:24px!important}
+.toward-admin .media-editor{margin-top:20px!important;margin-bottom:28px!important}
+.toward-admin .media-editor .media-rows:not(:empty){margin-top:16px}
+.toward-admin .card-body form > .d-flex.flex-wrap.gap-2.mt-4{margin-top:24px!important}
+.toward-admin .media-editor .media-row .form-control{margin-top:6px}
