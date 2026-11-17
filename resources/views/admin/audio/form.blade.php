@@ -5,7 +5,7 @@
 <div class="card border-0" style="max-width:900px">
  <div class="card-header bg-white p-4">
   <h1 class="h4 fw-bold mb-1">{{ $item->exists ? 'Edit' : 'Add' }} {{ Str::singular($label) }}</h1>
-  <p class="text-muted mb-0">Published content appears in Listen for members and guests. Audio is optional; text, images and videos are supported.</p>
+  <p class="text-muted mb-0">Published content appears in Listen for members and guests. Add audio, video or artwork alongside your description.</p>
  </div>
  <div class="card-body p-4">
   @if($errors->any())
@@ -31,6 +31,20 @@
      @if($item->audio_path)<a class="d-inline-block mt-2" href="{{ $item->audio_url }}" target="_blank" rel="noopener noreferrer">Listen to uploaded audio</a>@endif
     </div>
     <div class="col-md-6">
+     <label for="videoUpload" class="form-label fw-semibold">Video File (optional) {{ $item->video_path ? '(replace existing)' : '' }}</label>
+     <input id="videoUpload" name="video" type="file" class="form-control" accept=".mp4,.mov,.webm,.m4v,video/*">
+     <div class="form-text">MP4, MOV, WEBM or M4V, up to 150 MB.</div>
+     @if($item->video_path)
+      <div class="mt-2">
+       <a href="{{ $item->video_url }}" target="_blank" rel="noopener noreferrer">View uploaded video</a>
+       <label class="form-check mt-2">
+        <input class="form-check-input" type="checkbox" name="remove_video" value="1">
+        <span class="form-check-label">Remove current video</span>
+       </label>
+      </div>
+     @endif
+    </div>
+    <div class="col-md-6">
      <label for="artworkUpload" class="form-label fw-semibold">Artwork (optional)</label>
      <input id="artworkUpload" name="artwork" type="file" class="form-control" accept=".jpg,.jpeg,.png,.webp,image/*">
      <div class="form-text">JPG, PNG or WEBP, maximum 5 MB.</div>
@@ -53,7 +67,6 @@
      </select>
     </div>
    </div>
-   @include('admin.partials.media_editor', ['owner' => $item, 'prefix' => 'media', 'heading' => 'Extra Audio, Video, Images & Text'])
    <div class="d-flex gap-2 flex-wrap mt-4">
     <button type="submit" class="btn btn-primary px-4">{{ $item->exists ? 'Save Changes' : 'Save Audio' }}</button>
     <a href="{{ route('admin.audio.index', $category) }}" class="btn btn-outline-secondary">Cancel</a>

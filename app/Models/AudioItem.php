@@ -11,7 +11,7 @@ class AudioItem extends Model
     public const CATEGORIES = ['podcast', 'meditation', 'prayer'];
 
     protected $fillable = [
-        'category', 'title', 'description', 'audio_path', 'artwork_path',
+        'category', 'title', 'description', 'audio_path', 'video_path', 'artwork_path',
         'duration_seconds', 'is_published', 'published_at', 'created_by',
     ];
 
@@ -42,6 +42,11 @@ class AudioItem extends Model
         return $this->audio_path ? url(Storage::disk('public')->url($this->audio_path)) : null;
     }
 
+    public function getVideoUrlAttribute(): ?string
+    {
+        return $this->video_path ? url(Storage::disk('public')->url($this->video_path)) : null;
+    }
+
     public function getArtworkUrlAttribute(): ?string
     {
         return $this->artwork_path ? url(Storage::disk('public')->url($this->artwork_path)) : null;
@@ -55,6 +60,7 @@ class AudioItem extends Model
             'title' => $this->title,
             'description' => $this->description,
             'audio_url' => $this->audio_url,
+            'video_url' => $this->video_url,
             'artwork_url' => $this->artwork_url,
             'duration_seconds' => $this->duration_seconds,
             'published_at' => $this->published_at?->toIso8601String(),

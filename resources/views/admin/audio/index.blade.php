@@ -3,7 +3,7 @@
 @section('content')
 <div class="card border-0">
  <div class="card-header bg-white p-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
-  <div><h1 class="h4 fw-bold mb-1">Manage {{ $label }}</h1><p class="text-muted mb-0">Upload, edit and publish audio for the mobile app.</p></div>
+  <div><h1 class="h4 fw-bold mb-1">Manage {{ $label }}</h1><p class="text-muted mb-0">Upload, edit and publish audio, video and written content for the mobile app.</p></div>
   <a class="btn btn-primary" href="{{ route('admin.audio.create', $category) }}">Add {{ Str::singular($label) }}</a>
  </div>
  <div class="card-body p-0"><div class="table-responsive">
@@ -13,6 +13,7 @@
     @forelse($items as $item)
      <tr>
       <td><div class="fw-semibold">{{ $item->title }}</div><div class="small text-muted">{{ Str::limit($item->description, 75) }}</div>
+       @if($item->video_path)<div class="small text-muted">Video attached</div>@endif
        @if($item->media->isNotEmpty())<div class="small text-muted">{{ $item->media->pluck('type')->unique()->map(fn ($type) => ucfirst($type))->implode(' · ') }}</div>@endif
       </td>
       <td>{{ $item->duration_seconds ? ceil($item->duration_seconds / 60).' min' : '—' }}</td>
